@@ -1,0 +1,97 @@
+version: '3'
+
+services:
+
+  cde-bootstrap:
+    env-file: ".env"
+    build:
+      tags:
+        - "${IMG_NAME}_vscde-bootstrap:${IMG_TAG}"
+        - "${IMG_NAME}_vscde-bootstrap:${IMG_VER}"
+      labels:
+        version: "$IMG_VER"
+        description: "[BOOTSTRAP] $IMG_DESC"
+        base-image: "$BASE_IMG_NAME:$BASE_IMG_TAG"
+      context: ./
+      dockerfile: "$HOST_DOCKERFILES_DIR/vscde-bootstrap"
+      args:
+        # Base
+        BASE_IMG_NAME:            "$BASE_IMG_NAME"
+        BASE_IMG_TAG:             "$BASE_IMG_TAG"
+        # User
+        CONT_USER:                "$BOOT_CONT_USER"
+        CONT_USER_UID:            "$BOOT_CONT_USER_UID"
+        CONT_USER_GROUPS:         "$BOOT_CONT_USER_GROUPS"
+        # Host directories
+        HOST_CDE_DIR:             "$HOST_CDE_DIR"
+        HOST_SCRIPTS_DIR:         "$HOST_SCRIPTS_DIR"
+        # SSH
+        HOST_SSH_KEYPAIR_NAME:    "$HOST_SSH_KEYPAIR_NAME"
+        # Container directories
+        CONT_CDE_DIR:             "$CONT_CDE_DIR"
+      network: cde-net
+    stdin_open: true
+    tty: true
+    userns_mode: "$CONT_USERNS_MODE"
+    stop_grace_period: 0s
+    restart: "no"
+    network: none
+    volumes:
+      - type: bind
+        source: "$HOST_CDE_DIR"
+        target: "$CONT_CDE_DIR"
+
+  cde:
+    env-file: ".env"
+    build:
+      tags:
+        - "${IMG_NAME}_vscde:${IMG_TAG}"
+        - "${IMG_NAME}_vscde:${IMG_VER}"
+      labels:
+        version: "$IMG_VER"
+        description: "$IMG_DESC"
+        base-image: "$BASE_IMG_NAME:$BASE_IMG_TAG"
+      context: ./
+      dockerfile: "$HOST_DOCKERFILES_DIR/vscde-default"
+      args:
+        BASE_IMG_NAME:         "$BASE_IMG_NAME"
+        BASE_IMG_TAG:          "$BASE_IMG_TAG"
+        IMG_NAME:              "$IMG_NAME"
+        IMG_VER:               "$IMG_VER"
+        IMG_TAG:               "$IMG_TAG"
+        IMG_DESC:              "$IMG_DESC"
+        CONT_USER:             "$CONT_USER"
+        CONT_USER_GROUPS:      "$CONT_USER_GROUPS"
+        CONT_USER_UID:         "$CONT_USER_UID"
+        CONT_USERNS_MODE:      "$CONT_USERNS_MODE"
+        HOST_PROJ_DIR:         "$HOST_PROJ_DIR"
+        HOST_CDE_DIR:          "$HOST_CDE_DIR"
+        HOST_SCRIPTS_DIR:      "$HOST_SCRIPTS_DIR"
+        HOST_CONFIGS_DIR:      "$HOST_CONFIGS_DIR"
+        HOST_USERS_PASS_DIR:   "$HOST_USERS_PASS_DIR"
+        HOST_CODIUM_EXTS_DIR:  "$HOST_CODIUM_EXTS_DIR"
+        HOST_SSH_DIR:          "$HOST_SSH_DIR"
+        CONT_PROJ_DIR:         "$CONT_PROJ_DIR"
+        CONT_CDE_DIR:          "$CONT_CDE_DIR"
+        CONT_SSH_PORT:         "$CONT_SSH_PORT"
+        HOST_SSH_KEYPAIR_NAME: "$HOST_SSH_KEYPAIR_NAME"
+        CONT_PKGS:             "$CONT_PKGS"
+        CONT_CODIUM_EXTS:      "$CONT_CODIUM_EXTS"
+      network: "cde-net"
+    tty: true
+    stdin_open: false
+    userns_mode: "$CONT_USERNS_MODE"
+    stop_grace_period: 0s
+    restart: "no"
+    network: "cde-net"
+    ports: "$CONT_IP:$CONT_SSH_PORT:2022"
+    volumes:
+      - type: bind
+        source: "$HOST_PROJ_DIR"
+        target: "$CONT_PROJ_DIR"
+
+
+networks:
+  cde-net:
+    driver: bridge
+    internal: false
