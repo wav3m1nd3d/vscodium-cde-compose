@@ -1,0 +1,39 @@
+## VSCodium CDE bootstrap Dockerfile
+
+# Base Image
+ARG BASE_IMG_NAME
+ARG BASE_IMG_TAG
+FROM ${BASE_IMG_NAME}:${BASE_IMG_TAG}
+
+# Scripts
+ARG HOST_SCRIPTS_DIR
+ARG TEMP_SCRIPTS_DIR="/mnt"
+ARG CONT_USER
+ARG CONT_USER_UID
+ARG CONT_USER_GROUPS
+ARG CONT_PKGS
+ARG CONT_BASE_PKGS="\
+	bash \
+	sudo \
+	wget \
+	grep \
+	sed \
+	coreutils \
+	procps \
+	openssh-server \
+	ca-certificates \
+	whois"
+ARG CONT_CDE_DIR
+ARG HOST_SSH_KEYPAIR_NAME
+RUN --mount=type=bind,source="$HOST_SCRIPTS_DIR",target="$TEMP_SCRIPTS_DIR" \
+	--mount=type=cache,target=/var/cache/apt \
+	bash -c "$TEMP_SCRIPTS_DIR/container/bootstrap_create_user.bash" && \
+	bash -c "$TEMP_SCRIPTS_DIR/container/install_packages.bash" && \
+	bash -c "$TEMP_SCRIPTS_DIR/container/bootstrap_create_cdedir.bash"
+
+# Defaults
+USER "$CONT_USER"
+WORKDIR "$CONT_CDE_DIR"
+ENTRYPOINT ["/bin/bash", "-c"]
+ENV CDE_HOST_SCRIPTS_DIR "$HOST_SCRIPTS_DIR"
+CMD ["$CDE_HOST_SCRIPTS_DIR/tools/generate_ssh_keypair.bash && $CDE_HOST_SCRIPTS_DIR/tools/generate_user_passwords.bash"]
