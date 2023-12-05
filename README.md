@@ -1,31 +1,33 @@
 # VSCodium [CDE](https://github.com/wav3m1nd3d/ade-spec/README.md#CDE "Containerized Development Environment" ) Compose
 
-_"Comfortable like sitting at home, but your home is actually modular and hooked to a helicopter"_ - anon.
-
+<p align=center> <i>"Comfortable like sitting at home, but your home is actually modular and hooked to a helicopter"</i> <sub>anon.</sub></p>
 
 # About
 
-This [Abstracted Development Environment](https://github.com/wav3m1nd3d/ade-spec "ADE Specification") is based on containerization technology, thus this [CDE](https://github.com/wav3m1nd3d/ade-spec/README.md#CDE) is used to develop projects targeted to work on Linux based OS'es or in containerized environments; that implies low memory footprint and low performance overhead, immense portability potential among software and hardware, no dependency conflicts with host and easy on-demand environment update.
+This [Abstracted Development Environment](https://github.com/wav3m1nd3d/ade-spec "ADE Specification") is based on containerization technology, thus this [CDE](https://github.com/wav3m1nd3d/ade-spec/README.md#CDE "Containerized Development Environment") is used to develop projects targeted to work on Linux based OS'es or in containerized environments; that implies low memory footprint and low performance overhead, immense portability potential among software and hardware, no dependency conflicts with host and easy on-demand environment update.
 
-VSCodium and containers are connected through SSH, so can be run locally or in a remote location (not tested) without giving up on development process seamlessness thanks to VSCodium baked-in support and to [this extension](https://open-vsx.org/extension/jeanp413/open-remote-ssh).
+VSCodium and containers are connected through SSH, so can be run locally or in a remote location without giving up on development process seamlessness thanks to VSCodium baked-in remote functionality support and to [this extension](https://open-vsx.org/extension/jeanp413/open-remote-ssh).
 
 
 ## Supported Variations
 
 | Execution Previleges | Containerization Platform | Base Image | Configuration Options & Features | 
 | --- | --- | --- | --- |
-| <dl><dt>rootless</dt><dt>rootful</dt></dl> | <dl><dt>Podman</dt><dt>Docker</dt></dl> | <dl><dt>[Debian & Debian-based](# "BASE_IMG_NAME, BASE_IMG_TAG")</dt></dl> | <dl><dt>[Bootstrap Functionality](# "Enables CDE pre-build configuration and script execution even on systems without dependencies installed: BOOT_CONT_USER, BOOT_CONT_USER_UID, BOOT_CONT_USER_GROUPS")</dt><dt>[User](# "CONT_USER"), [UID](# "CONT_USER_UID"), [User Groups](# "CONT_USER_GROUPS"), [Encrypted Passwords](# "Generates and reads user passwords in encrypted form: CONT_USERS_PASS_DIR")</dt><dt>[Shared Directories (Bind Mount)](# "HOST_PROJ_DIR, CONT_PROJ_DIR, CONT_CDE_DIR, HOST_CDE_DIR, CONT_USERNS_MODE")</dt><dt>Bridge Networking, [SSH Port](# "CONT_SSH_PORT"), [SSH Keypair](# "Generates and uses ssh keys for passwordless public key authentication: HOST_SSH_DIR, HOST_SSH_KEYPAIR_NAME"), [Local IP](# "CONT_IP")</dt><dt>[Additional Packages](# "CONT_PKGS"), VSCodium Extensions ([online](# "CONT_CODIUM_EXTS"), [local](# "HOST_CODIUM_EXTS_DIR"))</dt><dt>[Image Name](# "IMG_NAME"), [Image Tag](# "IMG_TAG"), [Labels](# "IMG_VER, IMG_DESC")</dt></dl> |
+| <dl><dt>rootless</dt><dt>rootful</dt></dl> | <dl><dt>Podman</dt><dt>Docker</dt></dl> | <dl><dt>[Debian & Debian-based](# "BASE_IMG_NAME, BASE_IMG_TAG")</dt></dl> | <dl><dt>[Bootstrap Functionality](# "Enables CDE pre-build configuration and script execution even on systems without dependencies installed: BOOT_CONT_USER, BOOT_CONT_USER_UID, BOOT_CONT_USER_GROUPS")</dt><dt>[User](# "CONT_USER"), [UID](# "CONT_USER_UID"), [User Groups](# "CONT_USER_GROUPS"), [Encrypted Passwords](# "Generates and reads user passwords in encrypted form: CONT_USERS_PASS_DIR")</dt><dt>[Shared Directories (Bind Mount)](# "HOST_PROJ_DIR, CONT_PROJ_DIR, CONT_CDE_DIR, HOST_CDE_DIR, CONT_USERNS_MODE")</dt><dt>Bridge Networking, [SSH Port](# "CONT_SSH_PORT"), [SSH Keypair](# "Generates and uses ssh keys for passwordless public key authentication: HOST_SSH_DIR, HOST_SSH_KEYPAIR_NAME"), [Local IP](# "CONT_IP")</dt><dt>[Additional Packages](# "CONT_PKGS"), VSCodium Extensions ([online](# "CONT_CODIUM_EXTS"), [local](# "HOST_CODIUM_EXTS_DIR"))</dt><dt>[Image Name](# "IMG_NAME"), [Image Tag](# "IMG_TAG"), [Labels](# "IMG_VER, IMG_DESC")</dt><dt></dt></dl> |
 
-Refer to [documentation](htpps://github.com/wav3m1nd3d/vscodium-cde-compose/docs/guide.md) to see what's available
+Refer to [documentation](https://github.com/wav3m1nd3d/vscodium-cde-compose/blob/main/docs/guide.md) to see what's available
 
 # Requirements
 
 * Internet connection to clone repo and build container image
 * Linux / Mac / Windows (WSL2/Hyper-V)
 * [`VSCodium`](https://vscodium.com) with [`open-remote-ssh`](https://open-vsx.org/extension/jeanp413/open-remote-ssh) extension
+* OpenSSH client (builtin in Windows, Mac)
 * `podman` and `podman-compose` or `docker`
 
 # Quick Start
+
+## Requirements
 
 0. Install [dependencies listed previously](#requirements), here are some official installation instructions and relevant information:
 	* Containerization
@@ -38,15 +40,18 @@ Refer to [documentation](htpps://github.com/wav3m1nd3d/vscodium-cde-compose/docs
 		* [VSCodium](https://vscodium.com/#install)
 		* [Open Remote - SSH (Extension)](https://open-vsx.org/extension/jeanp413/open-remote-ssh#ssh-host-requirements#) 
 			* [\[VSCode Extension Installation\]](https://code.visualstudio.com/learn/get-started/extensions)
-
+		
 	_Remark to Linux users:_
-	* It's worth checking your distribution repository with your package manager (an example: `podman-compose` is available in Debian, while not mentioned in documentation).
+	* It's worth checking your distribution repository with your package manager (an example: `podman-compose` is available in Debian, while not mentioned in documentation) and almost a _MUST_ in terms of `ssh` client installation.
 
-1. Clone this repository to your project directory or download under [releases](https://github.com/wav3m1nd3d/vscodium-cde-compose/releases) a version and unarchive it there, then navigate inside the newly created directory
+
+## Download
+
+1. Clone this repository to your project directory or download a version under [releases](https://github.com/wav3m1nd3d/vscodium-cde-compose/releases) and unarchive it there, then navigate inside the newly created directory:
 
 	```sh
 	cd <my-project>
-	git clone htpps://github.com/wav3m1nd3d/vscodium-cde-compose.git
+	git clone https://github.com/wav3m1nd3d/vscodium-cde-compose.git
 	cd vscodium-cde-compose
 	```
 
@@ -58,7 +63,10 @@ Refer to [documentation](htpps://github.com/wav3m1nd3d/vscodium-cde-compose/docs
 	cd vscodium-cde-compose
 	```
 
-2. Configure environment by editing `.env` file, read more about it [here](https://github.com/wav3m1nd3d/vscodium-cde-compose/docs/env.md)
+
+## Configure
+
+2. Configure environment by editing `.env` file, read more about it [here](https://github.com/wav3m1nd3d/vscodium-cde-compose/blob/main/docs/env.md)
 
 
 3. One option is to run `cde-bootstrap` container service to configure user passwords and generate ssh keypair
@@ -107,6 +115,8 @@ Refer to [documentation](htpps://github.com/wav3m1nd3d/vscodium-cde-compose/docs
 		eval $(ssh-agent -s)
 		``` 
 
+## Connect
+
 6. Start `cde` container service
    ```sh
    podman-compose build cde
@@ -119,6 +129,6 @@ Refer to [documentation](htpps://github.com/wav3m1nd3d/vscodium-cde-compose/docs
 
 # Other Useful Material
 
-* [Guide](https://github.com/wav3m1nd3d/vscodium-cde-compose/docs/guide.md)
-* [Environment Variables](https://github.com/wav3m1nd3d/vscodium-cde-compose/docs/env.md)
-* [Troubleshooting](https://github.com/wav3m1nd3d/vscodium-cde-compose/docs/troubleshooting.md)
+* [Guide](https://github.com/wav3m1nd3d/vscodium-cde-compose/blob/main/docs/guide.md)
+* [Environment Variables](https://github.com/wav3m1nd3d/vscodium-cde-compose/blob/main/docs/env.md)
+* [Troubleshooting](https://github.com/wav3m1nd3d/vscodium-cde-compose/blob/main/docs/troubleshooting.md)
