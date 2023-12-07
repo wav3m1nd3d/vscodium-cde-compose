@@ -4,9 +4,9 @@
 
 <p align=center>
 	<picture>
-  		<source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/wav3m1nd3d/vscodium-cde-compose/main/docs/images/cde-dark.svg">
-  		<source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/wav3m1nd3d/vscodium-cde-compose/main/docs/images/cde.svg">
-  		<img alt="CDE Logo" src="https://raw.githubusercontent.com/wav3m1nd3d/vscodium-cde-compose/main/docs/images/cde.svg" height="200">
+  		<source media="(prefers-color-scheme: dark)" srcset="docs/images/cde-dark.svg">
+  		<source media="(prefers-color-scheme: light)" srcset="docs/images/cde.svg">
+  		<img alt="CDE Logo" src="docs/images/cde.svg" height="200">
 	</picture>
 </p>
 
