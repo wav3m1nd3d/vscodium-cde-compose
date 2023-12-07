@@ -1,19 +1,29 @@
+
+
 # VSCodium [CDE](https://github.com/wav3m1nd3d/ade-spec/README.md#CDE "Containerized Development Environment" ) Compose
 
-<p align=center> <i>"Comfortable like sitting at home, but your home is actually modular and hooked to a helicopter"</i> <sub>anon.</sub></p>
+<p align=center>
+	<picture>
+  		<source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/wav3m1nd3d/vscodium-cde-compose/main/docs/images/cde-dark.svg">
+  		<source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/wav3m1nd3d/vscodium-cde-compose/main/docs/images/cde.svg">
+  		<img alt="CDE Logo" src="https://raw.githubusercontent.com/wav3m1nd3d/vscodium-cde-compose/main/docs/images/cde.svg" height="200">
+	</picture>
+</p>
+
+<p align=center> <i>"Comfortable like sitting at home, but your home is actually modular and <b>HOOKED</b> to a helicopter"</i> <sub>anon.</sub></p>
 
 # About
 
 This [Abstracted Development Environment](https://github.com/wav3m1nd3d/ade-spec "ADE Specification") is based on containerization technology, thus this [CDE](https://github.com/wav3m1nd3d/ade-spec/README.md#CDE "Containerized Development Environment") is used to develop projects targeted to work on Linux based OS'es or in containerized environments; that implies low memory footprint and low performance overhead, immense portability potential among software and hardware, no dependency conflicts with host and easy on-demand environment update.
 
-VSCodium and containers are connected through SSH, so can be run locally or in a remote location without giving up on development process seamlessness thanks to VSCodium baked-in remote functionality support and to [this extension](https://open-vsx.org/extension/jeanp413/open-remote-ssh).
+VSCodium and containers are connected through SSH, so can be run locally or in a remote location without giving up on development process seamlessness thanks to VSCodium baked-in remote functionality support and to [this extension](https://open-vsx.org/extension/jeanp413/open-remote-ssh "open-remote-ssh").
 
 
 ## Supported Variations
 
 | Execution Previleges | Containerization Platform | Base Image | Configuration Options & Features | 
 | --- | --- | --- | --- |
-| rootless<br>rootful | Podman<br>Docker | [Debian & Debian-based](# "BASE_IMG_NAME, BASE_IMG_TAG") | [Bootstrap Functionality](# "Enables CDE pre-build configuration and script execution even on systems without dependencies installed: BOOT_CONT_USER, BOOT_CONT_USER_UID, BOOT_CONT_USER_GROUPS")<br>[User](# "CONT_USER"), [UID](# "CONT_USER_UID"), [User Groups](# "CONT_USER_GROUPS"), [Encrypted Passwords](# "Generates and reads user passwords in encrypted form: CONT_USERS_PASS_DIR")<br>[Shared Directories (Bind Mount)](# "HOST_PROJ_DIR, CONT_PROJ_DIR, CONT_CDE_DIR, HOST_CDE_DIR, CONT_USERNS_MODE")<br>Bridge Networking, [SSH Port](# "CONT_SSH_PORT"), [SSH Keypair](# "Generates and uses ssh keys for passwordless public key authentication: HOST_SSH_DIR, HOST_SSH_KEYPAIR_NAME"), [Local IP](# "CONT_IP")<br>[Additional Packages](# "CONT_PKGS"), VSCodium Extensions ([online](# "CONT_CODIUM_EXTS"), [local](# "HOST_CODIUM_EXTS_DIR"))<br>[Image Name](# "IMG_NAME"), [Image Tag](# "IMG_TAG"), [Labels](# "IMG_VER, IMG_DESC") |
+| rootless<br>rootful | Podman<br>Docker | [Debian & Debian-based](# "BASE_IMG_NAME, BASE_IMG_TAG") | [Bootstrap Functionality](# "Enables CDE pre-build configuration and script execution even on systems without dependencies installed: BOOT_CONT_USER, BOOT_CONT_USER_UID, BOOT_CONT_USER_GROUPS")<br>[User](# "CONT_USER"), [UID](# "CONT_USER_UID"), [User Groups](# "CONT_USER_GROUPS"), [Encrypted Passwords](# "Generates and reads user passwords in encrypted form: CONT_USERS_PASS_DIR")<br>[Shared Directories (Bind Mount)](# "HOST_PROJ_DIR, CONT_PROJ_DIR, CONT_CDE_DIR, HOST_CDE_DIR, CONT_USERNS_MODE")<br>Bridge Networking, [SSH Port](# "CONT_SSH_PORT"), [SSH Keypair](# "Generates and uses ssh keys for passwordless public key authentication: HOST_SSH_DIR, HOST_SSH_KEYPAIR_NAME"), [Local IP](# "CONT_IP")<br>[Additional Packages](# "CONT_PKGS"), VSCodium Extensions ([online](# "CONT_CODIUM_EXTS"), [local](# "HOST_CODIUM_EXTS_DIR"))<br>[Image Name](# "IMG_NAME"), [Image Tag](# "IMG_TAG"), [Labels](# "IMG_VER, IMG_DESC")<br> |
 
 Refer to [documentation](https://github.com/wav3m1nd3d/vscodium-cde-compose/blob/main/docs/guide.md) to see what's available
 
@@ -21,13 +31,13 @@ Refer to [documentation](https://github.com/wav3m1nd3d/vscodium-cde-compose/blob
 
 * Internet connection to clone repo and build container image
 * Linux / Mac / Windows (WSL2/Hyper-V)
-* [`VSCodium`](https://vscodium.com) with [`open-remote-ssh`](https://open-vsx.org/extension/jeanp413/open-remote-ssh) extension
-* OpenSSH client (builtin in Windows, Mac)
+* [`VSCodium`](https://vscodium.com) with [`Open Remote - SSH`](https://open-vsx.org/extension/jeanp413/open-remote-ssh) extension
+* `OpenSSH` client (builtin in Windows, Mac)
 * `podman` and `podman-compose` or `docker`
 
 # Quick Start
 
-## Requirements
+## Dependencies Installation
 
 0. Install [dependencies listed previously](#requirements), here are some official installation instructions and relevant information:
 	* Containerization
@@ -42,7 +52,10 @@ Refer to [documentation](https://github.com/wav3m1nd3d/vscodium-cde-compose/blob
 			* [\[VSCode Extension Installation\]](https://code.visualstudio.com/learn/get-started/extensions)
 		
 	_Remark to Linux users:_
-	* It's worth checking your distribution repository with your package manager (an example: `podman-compose` is available in Debian, while not mentioned in documentation) and almost a _MUST_ in terms of `ssh` client installation.
+	
+	It's worth checking your distribution repository with your package manager for required packages ignoring official documentation: 
+	* `openssh-client` or `openssh` widely available among distribution repositories, just search for `ssh` and then install the right one
+	* `podman-compose` is available in Debian, while not mentioned in documentation
 
 
 ## Download
