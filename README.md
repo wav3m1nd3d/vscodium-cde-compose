@@ -4,9 +4,9 @@
 
 <p align=center>
 	<picture>
-  		<source media="(prefers-color-scheme: dark)" srcset="docs/images/cde-dark.svg">
-  		<source media="(prefers-color-scheme: light)" srcset="docs/images/cde.svg">
-  		<img alt="CDE Logo" src="docs/images/cde.svg" height="400">
+  		<source media="(prefers-color-scheme: dark)" srcset="docs/images/cde-dark-mini.svg">
+  		<source media="(prefers-color-scheme: light)" srcset="docs/images/cde-mini.svg">
+  		<img alt="CDE Logo" src="docs/images/cde-mini.svg" height="100">
 	</picture>
 </p>
 
