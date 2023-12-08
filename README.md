@@ -1,31 +1,28 @@
-
-
 # VSCodium [CDE](https://github.com/wav3m1nd3d/ade-spec/README.md#CDE "Containerized Development Environment" ) Compose
 
-<p align=center>
+<div align=center>
 	<picture>
   		<source media="(prefers-color-scheme: dark)" srcset="docs/images/cde-dark-mini.svg">
   		<source media="(prefers-color-scheme: light)" srcset="docs/images/cde-mini.svg">
-  		<img alt="CDE Logo" src="docs/images/cde-mini.svg" height="100">
+  		<img alt="CDE Logo" src="docs/images/cde-mini.svg" height="150">
 	</picture>
+</div>
+<p align=center>
+	<i>"Comfortable like sitting at home, but your home is actually modular and <b>HOOKED</b> to a helicopter"</i> <sub>anon.</sub>
 </p>
-
-<p align=center> <i>"Comfortable like sitting at home, but your home is actually modular and <b>HOOKED</b> to a helicopter"</i> <sub>anon.</sub></p>
 
 # About
 
-This [Abstracted Development Environment](https://github.com/wav3m1nd3d/ade-spec "ADE Specification") is based on containerization technology, thus this [CDE](https://github.com/wav3m1nd3d/ade-spec/README.md#CDE "Containerized Development Environment") is used to develop projects targeted to work on Linux based OS'es or in containerized environments; that implies low memory footprint and low performance overhead, immense portability potential among software and hardware, no dependency conflicts with host and easy on-demand environment update.
-
-VSCodium and containers are connected through SSH, so can be run locally or in a remote location without giving up on development process seamlessness thanks to VSCodium baked-in remote functionality support and to [this extension](https://open-vsx.org/extension/jeanp413/open-remote-ssh "open-remote-ssh").
+This project is an [Abstracted Development Environment](https://github.com/wav3m1nd3d/ade-spec "ADE Specification") that utilizes containerization technology as abstraction layer, thus called for short a [CDE](https://github.com/wav3m1nd3d/ade-spec/README.md#CDE "Containerized Development Environment"), that integrates seamlessly with VSCodium IDE using one of the industry de-facto-standard [compose specification](https://compose-spec.io/) compliant software (supported among Docker and Podman).
 
 
 ## Supported Variations
 
-| Execution Previleges | Containerization Platform | Base Image | Configuration Options & Features | 
-| --- | --- | --- | --- |
-| rootless<br>rootful | Podman<br>Docker | [Debian & Debian-based](# "BASE_IMG_NAME, BASE_IMG_TAG") | [Bootstrap Functionality](# "Enables CDE pre-build configuration and script execution even on systems without dependencies installed: BOOT_CONT_USER, BOOT_CONT_USER_UID, BOOT_CONT_USER_GROUPS")<br>[User](# "CONT_USER"), [UID](# "CONT_USER_UID"), [User Groups](# "CONT_USER_GROUPS"), [Encrypted Passwords](# "Generates and reads user passwords in encrypted form: CONT_USERS_PASS_DIR")<br>[Shared Directories (Bind Mount)](# "HOST_PROJ_DIR, CONT_PROJ_DIR, CONT_CDE_DIR, HOST_CDE_DIR, CONT_USERNS_MODE")<br>Bridge Networking, [SSH Port](# "CONT_SSH_PORT"), [SSH Keypair](# "Generates and uses ssh keys for passwordless public key authentication: HOST_SSH_DIR, HOST_SSH_KEYPAIR_NAME"), [Local IP](# "CONT_IP")<br>[Additional Packages](# "CONT_PKGS"), VSCodium Extensions ([online](# "CONT_CODIUM_EXTS"), [local](# "HOST_CODIUM_EXTS_DIR"))<br>[Image Name](# "IMG_NAME"), [Image Tag](# "IMG_TAG"), [Labels](# "IMG_VER, IMG_DESC")<br> |
+| Host OS | Execution Previleges | Containerization Platform | Base Image | Configuration Options & Features | 
+| --- | --- | --- | --- | --- |
+| <ul style="list-style: none;"><li>Linux</li><li>Mac</li><li>Windows</li><ul> | <ul style="list-style: none;"><li>rootless</li><li>rootful</li></ul> | <ul style="list-style: none;"><li>Podman</li><li>Docker</li></ul> | <ul style="list-style: none;"><li>[Debian & Debian-based](# "BASE_IMG_NAME, BASE_IMG_TAG")</li></ul> | <ul style="list-style: none;"><li>[Bootstrap Functionality](# "Enables CDE pre-build configuration and script execution even on systems without dependencies installed: BOOT_CONT_USER, BOOT_CONT_USER_UID, BOOT_CONT_USER_GROUPS")</li><li>[User](# "CONT_USER"), [UID](# "CONT_USER_UID"), [User Groups](# "CONT_USER_GROUPS"), [Encrypted Passwords](# "Generates and reads user passwords in encrypted form: CONT_USERS_PASS_DIR")<br>[Shared Directories (Bind Mount)](# "HOST_PROJ_DIR, CONT_PROJ_DIR, CONT_CDE_DIR, HOST_CDE_DIR, CONT_USERNS_MODE")</li><li>Bridge Networking, [SSH Port](# "CONT_SSH_PORT"), [SSH Keypair](# "Generates and uses ssh keys for passwordless public key authentication: HOST_SSH_DIR, HOST_SSH_KEYPAIR_NAME"), [Local IP](# "CONT_IP")</li><li>[Additional Packages](# "CONT_PKGS"), VSCodium Extensions ([online](# "CONT_CODIUM_EXTS"), [local](# "HOST_CODIUM_EXTS_DIR"))</li><li>[Image Name](# "IMG_NAME"), [Image Tag](# "IMG_TAG"), [Labels](# "IMG_VER, IMG_DESC")</li></ul> |
 
-Refer to [documentation](https://github.com/wav3m1nd3d/vscodium-cde-compose/blob/main/docs/guide.md) to see what's available
+Refer to [documentation](docs/guide.md) to see what's available
 
 # Requirements
 
@@ -79,7 +76,7 @@ Refer to [documentation](https://github.com/wav3m1nd3d/vscodium-cde-compose/blob
 
 ## Configure
 
-2. Configure environment by editing `.env` file, read more about it [here](https://github.com/wav3m1nd3d/vscodium-cde-compose/blob/main/docs/env.md)
+2. Configure environment by editing `.env` file, read more about it [here](docs/env.md)
 
 
 3. One option is to run `cde-bootstrap` container service to configure user passwords and generate ssh keypair
@@ -142,6 +139,6 @@ Refer to [documentation](https://github.com/wav3m1nd3d/vscodium-cde-compose/blob
 
 # Other Useful Material
 
-* [Guide](https://github.com/wav3m1nd3d/vscodium-cde-compose/blob/main/docs/guide.md)
-* [Environment Variables](https://github.com/wav3m1nd3d/vscodium-cde-compose/blob/main/docs/env.md)
-* [Troubleshooting](https://github.com/wav3m1nd3d/vscodium-cde-compose/blob/main/docs/troubleshooting.md)
+* [Guide](docs/guide.md)
+* [Environment Variables](docs/env.md)
+* [Troubleshooting](docs/troubleshooting.md)
