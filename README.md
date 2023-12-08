@@ -13,14 +13,27 @@
 
 # About
 
-This project is an [Abstracted Development Environment](https://github.com/wav3m1nd3d/ade-spec "ADE Specification") that utilizes containerization technology as abstraction layer, thus called for short a [CDE](https://github.com/wav3m1nd3d/ade-spec/README.md#CDE "Containerized Development Environment"), that integrates seamlessly with VSCodium IDE using one of the industry de-facto-standard [compose specification](https://compose-spec.io/) compliant software (supported among Docker and Podman).
+This project is an [Abstracted Development Environment](https://github.com/wav3m1nd3d/ade-spec "ADE Specification") that utilizes containerization technology as abstraction layer, thus called for short a [CDE](https://github.com/wav3m1nd3d/ade-spec/README.md#CDE "Containerized Development Environment"), that integrates seamlessly with VSCodium IDE using one of the industry de-facto-standard [compose specification](https://compose-spec.io/) compliant software like Docker or Podman.
 
 
-## Supported Variations
+<details open>
+<summary>
+	<h2>Variations</h2>
+</summary>
 
-| Host OS | Execution Previleges | Containerization Platform | Base Image | Configuration Options & Features | 
-| --- | --- | --- | --- | --- |
-| <ul style="list-style: none;"><li>Linux</li><li>Mac</li><li>Windows</li><ul> | <ul style="list-style: none;"><li>rootless</li><li>rootful</li></ul> | <ul style="list-style: none;"><li>Podman</li><li>Docker</li></ul> | <ul style="list-style: none;"><li>[Debian & Debian-based](# "BASE_IMG_NAME, BASE_IMG_TAG")</li></ul> | <ul style="list-style: none;"><li>[Bootstrap Functionality](# "Enables CDE pre-build configuration and script execution even on systems without dependencies installed: BOOT_CONT_USER, BOOT_CONT_USER_UID, BOOT_CONT_USER_GROUPS")</li><li>[User](# "CONT_USER"), [UID](# "CONT_USER_UID"), [User Groups](# "CONT_USER_GROUPS"), [Encrypted Passwords](# "Generates and reads user passwords in encrypted form: CONT_USERS_PASS_DIR")<br>[Shared Directories (Bind Mount)](# "HOST_PROJ_DIR, CONT_PROJ_DIR, CONT_CDE_DIR, HOST_CDE_DIR, CONT_USERNS_MODE")</li><li>Bridge Networking, [SSH Port](# "CONT_SSH_PORT"), [SSH Keypair](# "Generates and uses ssh keys for passwordless public key authentication: HOST_SSH_DIR, HOST_SSH_KEYPAIR_NAME"), [Local IP](# "CONT_IP")</li><li>[Additional Packages](# "CONT_PKGS"), VSCodium Extensions ([online](# "CONT_CODIUM_EXTS"), [local](# "HOST_CODIUM_EXTS_DIR"))</li><li>[Image Name](# "IMG_NAME"), [Image Tag](# "IMG_TAG"), [Labels](# "IMG_VER, IMG_DESC")</li></ul> |
+The following software configurations are available for this CDE:
+
+| Host Operaring System | Execution Previleges | Containerization Platform |
+| --- | --- | --- |
+| Linux<br>Mac<br>Windows<br> | rootless<br>rootful<br> | Podman<br>Docker<br> |
+
+<br>
+
+| Base Image | Features & Configuration Options|
+| --- | --- |
+| [Debian & Debian-based](# "BASE_IMG_NAME, BASE_IMG_TAG") | <ul style="list-style: ;"><li>[Bootstrap Functionality](# "Enables CDE pre-build configuration and script execution even on systems without dependencies installed: BOOT_CONT_USER, BOOT_CONT_USER_UID, BOOT_CONT_USER_GROUPS")</li><li>[User](# "CONT_USER"), [UID](# "CONT_USER_UID"), [User Groups](# "CONT_USER_GROUPS"), [Encrypted Passwords](# "Generates and reads user passwords in encrypted form: CONT_USERS_PASS_DIR")<br>[Shared Directories (Bind Mount)](# "HOST_PROJ_DIR, CONT_PROJ_DIR, CONT_CDE_DIR, HOST_CDE_DIR, CONT_USERNS_MODE")</li><li>Bridge Networking, [SSH Port](# "CONT_SSH_PORT"), [SSH Keypair](# "Generates and uses ssh keys for passwordless public key authentication: HOST_SSH_DIR, HOST_SSH_KEYPAIR_NAME"), [Local IP](# "CONT_IP")</li><li>[Additional Packages](# "CONT_PKGS"), VSCodium Extensions ([online](# "CONT_CODIUM_EXTS"), [local](# "HOST_CODIUM_EXTS_DIR"))</li><li>[Image Name](# "IMG_NAME"), [Image Tag](# "IMG_TAG"), [Labels](# "IMG_VER, IMG_DESC")</li></ul> |
+</details>
+</details>
 
 Refer to [documentation](docs/guide.md) to see what's available
 
