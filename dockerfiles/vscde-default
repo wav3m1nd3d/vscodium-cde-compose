@@ -1,0 +1,57 @@
+## VSCodium CDE Dockerfile
+
+# Base Image
+ARG BASE_IMG_NAME
+ARG BASE_IMG_TAG
+FROM ${BASE_IMG_NAME}:${BASE_IMG_TAG}
+
+# Scripts
+ARG HOST_SCRIPTS_DIR
+ARG HOST_CONFIGS_DIR
+ARG HOST_SSH_DIR
+ARG HOST_USERS_PASS_DIR
+ARG HOST_CODIUM_EXTS_DIR
+ARG TEMP_SCRIPTS_DIR="/mnt/scripts"
+ARG TEMP_CONFIGS_DIR="/mnt/configs"
+ARG TEMP_SSH_DIR="/mnt/ssh"
+ARG TEMP_USERS_PASS_DIR="/mnt/users"
+ARG TEMP_CODIUM_EXTS_DIR="/mnt/codium-exts"
+ARG CONT_USER
+ARG CONT_USER_UID
+ARG CONT_USER_GROUPS
+ARG CONT_PKGS
+ARG CONT_BASE_PKGS="\
+	bash \
+	supervisor \
+	gosu \
+	wget \
+	grep \
+	sed \
+	coreutils \
+	procps \
+	openssh-server \
+	ca-certificates \
+	whois"
+ARG CONT_PROJ_DIR
+ARG CONT_CDE_DIR
+ARG HOST_SSH_KEYPAIR_NAME
+RUN --mount=type=bind,source="$HOST_SCRIPTS_DIR",target="$TEMP_SCRIPTS_DIR" \
+	--mount=type=bind,source="$HOST_CONFIGS_DIR",target="$TEMP_CONFIGS_DIR" \
+	--mount=type=bind,source="$HOST_SSH_DIR",target="$TEMP_SSH_DIR" \
+	--mount=type=bind,source="$HOST_USERS_PASS_DIR",target="$TEMP_USERS_PASS_DIR" \
+	--mount=type=bind,source="$HOST_CODIUM_EXTS_DIR",target="$TEMP_CODIUM_EXTS_DIR" \
+	--mount=type=cache,target=/var/cache/apt \
+	bash -c "$TEMP_SCRIPTS_DIR/container/create_user.bash" && \
+	bash -c "$TEMP_SCRIPTS_DIR/container/install_packages.bash" && \
+	bash -c "$TEMP_SCRIPTS_DIR/container/create_projdir.bash" && \
+	bash -c "$TEMP_SCRIPTS_DIR/container/configure_services.bash" && \
+	gosu "$CONT_USER" bash -c "$TEMP_SCRIPTS_DIR/container/install_codium-server.bash" && \
+	gosu "$CONT_USER" bash -c "$TEMP_SCRIPTS_DIR/container/install_codium_exts.bash"
+
+# Defaults
+USER "$CONT_USER"
+WORKDIR "$CONT_PROJ_DIR"
+ENTRYPOINT ["/bin/bash", "-c"]
+ENV CDE_HOST_SCRIPTS_DIR "$HOST_SCRIPTS_DIR"
+ENV ENV="/etc/profile"
+CMD ["if [[ \"$(whoami)\" == 'root' ]]; then /usr/bin/supervisord; else /usr/bin/supervisord -c /opt/supervisor/supervisord.conf; fi"]
