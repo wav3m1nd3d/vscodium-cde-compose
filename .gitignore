@@ -1,3 +1,4 @@
 secrets/ssh/*
 secrets/users/*
 codium-exts/*
+!.gitignore
