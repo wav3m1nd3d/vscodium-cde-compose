@@ -1,31 +1,53 @@
 # VSCodium [CDE](https://github.com/wav3m1nd3d/ade-spec/README.md#CDE "Containerized Development Environment" ) Compose
 
-_"Comfortable like sitting at home, but your home is actually modular and hooked to a helicopter"_ - anon.
-
+<div align=center>
+	<picture>
+  		<source media="(prefers-color-scheme: dark)" srcset="docs/images/cde-dark-mini.svg">
+  		<source media="(prefers-color-scheme: light)" srcset="docs/images/cde-mini.svg">
+  		<img alt="CDE Logo" src="docs/images/cde-mini.svg" height="150">
+	</picture>
+</div>
+<p align=center>
+	<i>"Comfortable like sitting at home, but your home is actually modular and <b>HOOKED</b> to a helicopter"</i> <sub>anon.</sub>
+</p>
 
 # About
 
-This [Abstracted Development Environment](https://github.com/wav3m1nd3d/ade-spec "ADE Specification") is based on containerization technology, thus this [CDE](https://github.com/wav3m1nd3d/ade-spec/README.md#CDE) is used to develop projects targeted to work on Linux based OS'es or in containerized environments; that implies low memory footprint and low performance overhead, immense portability potential among software and hardware, no dependency conflicts with host and easy on-demand environment update.
-
-VSCodium and containers are connected through SSH, so can be run locally or in a remote location (not tested) without giving up on development process seamlessness thanks to VSCodium baked-in support and to [this extension](https://open-vsx.org/extension/jeanp413/open-remote-ssh).
+This project is an [Abstracted Development Environment](https://github.com/wav3m1nd3d/ade-spec "ADE Specification") that utilizes containerization technology as abstraction layer, thus called for short a [CDE](https://github.com/wav3m1nd3d/ade-spec/README.md#CDE "Containerized Development Environment"), that integrates seamlessly with VSCodium IDE using one of the industry de-facto-standard [compose specification](https://compose-spec.io/) compliant software like Docker or Podman.
 
 
-## Supported Variations
+<details open>
+<summary>
+	<h2>Variations</h2>
+</summary>
 
-| Execution Previleges | Containerization Platform | Base Image | Configuration Options & Features | 
-| --- | --- | --- | --- |
-| <dl><dt>rootless</dt><dt>rootful</dt></dl> | <dl><dt>Podman</dt><dt>Docker</dt></dl> | <dl><dt>[Debian & Debian-based](# "BASE_IMG_NAME, BASE_IMG_TAG")</dt></dl> | <dl><dt>[Bootstrap Functionality](# "Enables CDE pre-build configuration and script execution even on systems without dependencies installed: BOOT_CONT_USER, BOOT_CONT_USER_UID, BOOT_CONT_USER_GROUPS")</dt><dt>[User](# "CONT_USER"), [UID](# "CONT_USER_UID"), [User Groups](# "CONT_USER_GROUPS"), [Encrypted Passwords](# "Generates and reads user passwords in encrypted form: CONT_USERS_PASS_DIR")</dt><dt>[Shared Directories (Bind Mount)](# "HOST_PROJ_DIR, CONT_PROJ_DIR, CONT_CDE_DIR, HOST_CDE_DIR, CONT_USERNS_MODE")</dt><dt>Bridge Networking, [SSH Port](# "CONT_SSH_PORT"), [SSH Keypair](# "Generates and uses ssh keys for passwordless public key authentication: HOST_SSH_DIR, HOST_SSH_KEYPAIR_NAME"), [Local IP](# "CONT_IP")</dt><dt>[Additional Packages](# "CONT_PKGS"), VSCodium Extensions ([online](# "CONT_CODIUM_EXTS"), [local](# "HOST_CODIUM_EXTS_DIR"))</dt><dt>[Image Name](# "IMG_NAME"), [Image Tag](# "IMG_TAG"), [Labels](# "IMG_VER, IMG_DESC")</dt></dl> |
+The following software configurations are available for this CDE:
 
-Refer to [documentation](htpps://github.com/wav3m1nd3d/vscodium-cde-compose/docs/guide.md) to see what's available
+| Host Operaring System | Execution Previleges | Containerization Platform |
+| --- | --- | --- |
+| Linux<br>Mac<br>Windows<br> | rootless<br>rootful<br> | Podman<br>Docker<br> |
+
+<br>
+
+| Base Image | Features & Configuration Options|
+| --- | --- |
+| [Debian & Debian-based](# "BASE_IMG_NAME, BASE_IMG_TAG") | <ul style="list-style: ;"><li>[Bootstrap Functionality](# "Enables CDE pre-build configuration and script execution even on systems without dependencies installed: BOOT_CONT_USER, BOOT_CONT_USER_UID, BOOT_CONT_USER_GROUPS")</li><li>[User](# "CONT_USER"), [UID](# "CONT_USER_UID"), [User Groups](# "CONT_USER_GROUPS"), [Encrypted Passwords](# "Generates and reads user passwords in encrypted form: CONT_USERS_PASS_DIR")<br>[Shared Directories (Bind Mount)](# "HOST_PROJ_DIR, CONT_PROJ_DIR, CONT_CDE_DIR, HOST_CDE_DIR, CONT_USERNS_MODE")</li><li>Bridge Networking, [SSH Port](# "CONT_SSH_PORT"), [SSH Keypair](# "Generates and uses ssh keys for passwordless public key authentication: HOST_SSH_DIR, HOST_SSH_KEYPAIR_NAME"), [Local IP](# "CONT_IP")</li><li>[Additional Packages](# "CONT_PKGS"), VSCodium Extensions ([online](# "CONT_CODIUM_EXTS"), [local](# "HOST_CODIUM_EXTS_DIR"))</li><li>[Image Name](# "IMG_NAME"), [Image Tag](# "IMG_TAG"), [Labels](# "IMG_VER, IMG_DESC")</li></ul> |
+</details>
+</details>
+
+Refer to [documentation](docs/guide.md) to see what's available
 
 # Requirements
 
 * Internet connection to clone repo and build container image
 * Linux / Mac / Windows (WSL2/Hyper-V)
-* [`VSCodium`](https://vscodium.com) with [`open-remote-ssh`](https://open-vsx.org/extension/jeanp413/open-remote-ssh) extension
+* [`VSCodium`](https://vscodium.com) with [`Open Remote - SSH`](https://open-vsx.org/extension/jeanp413/open-remote-ssh) extension
+* `OpenSSH` client (builtin in Windows, Mac)
 * `podman` and `podman-compose` or `docker`
 
 # Quick Start
+
+## Dependencies Installation
 
 0. Install [dependencies listed previously](#requirements), here are some official installation instructions and relevant information:
 	* Containerization
@@ -38,15 +60,21 @@ Refer to [documentation](htpps://github.com/wav3m1nd3d/vscodium-cde-compose/docs
 		* [VSCodium](https://vscodium.com/#install)
 		* [Open Remote - SSH (Extension)](https://open-vsx.org/extension/jeanp413/open-remote-ssh#ssh-host-requirements#) 
 			* [\[VSCode Extension Installation\]](https://code.visualstudio.com/learn/get-started/extensions)
-
+		
 	_Remark to Linux users:_
-	* It's worth checking your distribution repository with your package manager (an example: `podman-compose` is available in Debian, while not mentioned in documentation).
+	
+	It's worth checking your distribution repository with your package manager for required packages ignoring official documentation: 
+	* `openssh-client` or `openssh` widely available among distribution repositories, just search for `ssh` and then install the right one
+	* `podman-compose` is available in Debian, while not mentioned in documentation
 
-1. Clone this repository to your project directory or download under [releases](https://github.com/wav3m1nd3d/vscodium-cde-compose/releases) a version and unarchive it there, then navigate inside the newly created directory
+
+## Download
+
+1. Clone this repository to your project directory or download a version under [releases](https://github.com/wav3m1nd3d/vscodium-cde-compose/releases) and unarchive it there, then navigate inside the newly created directory:
 
 	```sh
 	cd <my-project>
-	git clone htpps://github.com/wav3m1nd3d/vscodium-cde-compose.git
+	git clone https://github.com/wav3m1nd3d/vscodium-cde-compose.git
 	cd vscodium-cde-compose
 	```
 
@@ -58,7 +86,10 @@ Refer to [documentation](htpps://github.com/wav3m1nd3d/vscodium-cde-compose/docs
 	cd vscodium-cde-compose
 	```
 
-2. Configure environment by editing `.env` file, read more about it [here](https://github.com/wav3m1nd3d/vscodium-cde-compose/docs/env.md)
+
+## Configure
+
+2. Configure environment by editing `.env` file, read more about it [here](docs/env.md)
 
 
 3. One option is to run `cde-bootstrap` container service to configure user passwords and generate ssh keypair
@@ -107,6 +138,8 @@ Refer to [documentation](htpps://github.com/wav3m1nd3d/vscodium-cde-compose/docs
 		eval $(ssh-agent -s)
 		``` 
 
+## Connect
+
 6. Start `cde` container service
    ```sh
    podman-compose build cde
@@ -119,6 +152,6 @@ Refer to [documentation](htpps://github.com/wav3m1nd3d/vscodium-cde-compose/docs
 
 # Other Useful Material
 
-* [Guide](https://github.com/wav3m1nd3d/vscodium-cde-compose/docs/guide.md)
-* [Environment Variables](https://github.com/wav3m1nd3d/vscodium-cde-compose/docs/env.md)
-* [Troubleshooting](https://github.com/wav3m1nd3d/vscodium-cde-compose/docs/troubleshooting.md)
+* [Guide](docs/guide.md)
+* [Environment Variables](docs/env.md)
+* [Troubleshooting](docs/troubleshooting.md)
