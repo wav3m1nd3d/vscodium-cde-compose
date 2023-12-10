@@ -31,7 +31,8 @@ ARG CONT_BASE_PKGS="\
 	procps \
 	openssh-server \
 	ca-certificates \
-	whois"
+	whois \
+	locales"
 ARG CONT_PROJ_DIR
 ARG CONT_CDE_DIR
 ARG HOST_SSH_KEYPAIR_NAME
@@ -45,6 +46,7 @@ RUN --mount=type=bind,source="$HOST_SCRIPTS_DIR",target="$TEMP_SCRIPTS_DIR" \
 	bash -c "$TEMP_SCRIPTS_DIR/container/install_packages.bash" && \
 	bash -c "$TEMP_SCRIPTS_DIR/container/create_projdir.bash" && \
 	bash -c "$TEMP_SCRIPTS_DIR/container/configure_services.bash" && \
+	bash -c "$TEMP_SCRIPTS_DIR/container/configure_generic.bash" && \
 	gosu "$CONT_USER" bash -c "$TEMP_SCRIPTS_DIR/container/install_codium-server.bash" && \
 	gosu "$CONT_USER" bash -c "$TEMP_SCRIPTS_DIR/container/install_codium_exts.bash"
 
