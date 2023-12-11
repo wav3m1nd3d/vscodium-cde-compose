@@ -24,13 +24,15 @@ ARG CONT_BASE_PKGS="\
 	supervisor \
 	gosu \
 	wget \
+	curl \
 	grep \
 	sed \
 	coreutils \
 	openssh-server \
 	ca-certificates \
 	whois \
-	locales"
+	locales \
+	git"
 ARG CONT_PROJ_DIR
 ARG CONT_CDE_DIR
 ARG HOST_SSH_KEYPAIR_NAME
@@ -63,6 +65,13 @@ RUN --mount=type=bind,source="$HOST_SCRIPTS_DIR",target="$TEMP_SCRIPTS_DIR" \
 RUN --mount=type=bind,source="$HOST_SCRIPTS_DIR",target="$TEMP_SCRIPTS_DIR" \
 	--mount=type=bind,source="$HOST_CODIUM_EXTS_DIR",target="$TEMP_CODIUM_EXTS_DIR" \
 	gosu "$CONT_USER" bash -c "$TEMP_SCRIPTS_DIR/container/install_codium_exts.bash '$CONT_CODIUM_EXTS' '$TEMP_CODIUM_EXTS_DIR'"
+RUN --mount=type=bind,source="$HOST_SCRIPTS_DIR",target="$TEMP_SCRIPTS_DIR" \
+	--mount=type=bind,source="$HOST_CONFIGS_DIR",target="$TEMP_CONFIGS_DIR" \
+	--mount=type=bind,source="$HOST_SSH_DIR",target="$TEMP_SSH_DIR" \
+	--mount=type=bind,source="$HOST_USERS_PASS_DIR",target="$TEMP_USERS_PASS_DIR" \
+	--mount=type=bind,source="$HOST_CODIUM_EXTS_DIR",target="$TEMP_CODIUM_EXTS_DIR" \
+	--mount=type=cache,target=/var/cache/apt \
+	gosu "$CONT_USER" bash -c "$TEMP_SCRIPTS_DIR/container/install_py-poe.bash"
 
 # Defaults
 USER "$CONT_USER"
