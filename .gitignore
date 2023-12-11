@@ -1,4 +1,8 @@
+# Ignore directory contents, keep directories
 secrets/ssh/*
 secrets/users/*
 codium-exts/*
 !.gitignore
+
+# Ignore worktrees
+.worktrees/*
