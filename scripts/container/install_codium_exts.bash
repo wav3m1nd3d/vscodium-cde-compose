@@ -8,7 +8,7 @@ done
 
 # Install VSCodium extensions from marketplace
 for ext in $CONT_CODIUM_EXTS; do
-	"$codium_path" --install-extansion $CONT_CODIUM_EXTS
+	"$codium_path" --install-extension $CONT_CODIUM_EXTS
 done
 
 # Install VSCodium extensions from .vsix
