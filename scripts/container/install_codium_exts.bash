@@ -8,12 +8,12 @@ done
 
 # Install VSCodium extensions from marketplace
 for ext in $CONT_CODIUM_EXTS; do
-	"$codium_path" --install-extansion $CONT_CODIUM_EXTS
+	"$codium_path" --install-extension "$ext" --force
 done
 
 # Install VSCodium extensions from .vsix
 for entry in "$TEMP_CODIUM_EXTS_DIR/"*".vsix"; do
 	if [[ -f "$entry" ]]; then
-		"$codium_path" --install-extension "$entry"
+		"$codium_path" --install-extension "$entry" --force
 	fi
 done
