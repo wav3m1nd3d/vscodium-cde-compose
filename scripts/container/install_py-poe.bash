@@ -2,17 +2,56 @@
 
 set -e
 
+SCRIPT_NAME="${BASH_SOURCE##*/}"
+source "$TEMP_SCRIPTS_DIR/libs/lib_msg.bash"
+
+
 # Install pyenv
 curl https://pyenv.run | bash
+
 
 # Configure pyenv
 echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bashrc
 echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc
 echo 'eval "$(pyenv init -)"' >> ~/.bashrc
+echo 'eval "$(pyenv virtualenv-init -)"' >> ~/.bashrc
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
+export PYTHON_BUILD_BUILD_PATH="$CONT_PYTHON_BUILD_BUILD_PATH"
+export PYTHON_BUILD_CACHE_PATH="$CONT_PYTHON_BUILD_CACHE_PATH"
+eval "$(pyenv init -)"
+eval "$(pyenv virtualenv-init -)"
+
+
+# Install pyenv-managed python
+if [[ -n "$CONT_PYTHON_VERS" ]]; then
+	for py_ver in $CONT_PYTHON_VERS; do
+		pyenv install -k "$py_ver"
+	done
+elif [[ -f "$TEMP_PYTHON_VERS_FILE_DIR/.python-version" ]]; then
+	for py_ver in $(cat $TEMP_PYTHON_VERS_FILE_DIR/.python-version); do
+		pyenv install -k "$py_ver"
+	done
+else
+	die 1 'CONT_PYTHON_VERS or CONT_PYTHON_VERS_FILE_DIR should be set'
+fi
+
+if [[ -z "$CONT_POETRY_PYTHON_VERS" ]]; then
+	die 1 'CONT_POETRY_PYTHON_VERS should be set'
+fi
+
+pyenv install -ks "$CONT_POETRY_PYTHON_VERS"
+pyenv global "$CONT_POETRY_PYTHON_VERS"
 
 
 # Install poetry
-curl -sSL https://install.python-poetry.org | python3 -
+poetry_pip="$(pyenv which pip)"
+"$poetry_pip" install -U pip setuptools
+"$poetry_pip" install poetry
 
-echo 'export PATH="$PATH:$HOME/.local/bin"' >> ~/.bashrc
-$HOME/.local/bin/poetry completions bash >> ~/.bash_completion
+
+# Configure poetry
+poetry_venv="$(pyenv which poetry)"
+poetry_venv="${poetry_venv%/*}"
+echo 'export PATH="$PATH:'"$poetry_venv\"" >> ~/.bashrc
+"$(pyenv which poetry)" completions bash >> ~/.bash_completion

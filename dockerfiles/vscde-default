@@ -16,6 +16,7 @@ ARG TEMP_CONFIGS_DIR="/mnt/configs"
 ARG TEMP_SSH_DIR="/mnt/ssh"
 ARG TEMP_USERS_PASS_DIR="/mnt/users"
 ARG TEMP_CODIUM_EXTS_DIR="/mnt/codium-exts"
+ARG TEMP_PYTHON_VERS_FILE_DIR="/mnt/python-version-dir"
 ARG CONT_USER
 ARG CONT_USER_UID
 ARG CONT_USER_GROUPS
@@ -32,7 +33,21 @@ ARG CONT_BASE_PKGS="\
 	ca-certificates \
 	whois \
 	locales \
-	git"
+	git \
+	build-essential \
+	libssl-dev \
+	zlib1g-dev \
+	libbz2-dev \
+	libreadline-dev \
+	libsqlite3-dev \
+	curl \
+	libncursesw5-dev \
+	xz-utils \
+	tk-dev \
+	libxml2-dev \
+	libxmlsec1-dev \
+	libffi-dev \
+	liblzma-dev"
 ARG CONT_PROJ_DIR
 ARG CONT_CDE_DIR
 ARG HOST_SSH_KEYPAIR_NAME
@@ -57,20 +72,25 @@ RUN --mount=type=bind,source="$HOST_SCRIPTS_DIR",target="$TEMP_SCRIPTS_DIR" \
 
 RUN --mount=type=bind,source="$HOST_SCRIPTS_DIR",target="$TEMP_SCRIPTS_DIR" \
 	--mount=type=bind,source="$HOST_CONFIGS_DIR",target="$TEMP_CONFIGS_DIR" \
-	bash -c "$TEMP_SCRIPTS_DIR/container/configure_generic.bash '$CONT_USER'"
-
-RUN --mount=type=bind,source="$HOST_SCRIPTS_DIR",target="$TEMP_SCRIPTS_DIR" \
-	gosu "$CONT_USER" bash -c "$TEMP_SCRIPTS_DIR/container/install_codium-server.bash"
-
-RUN --mount=type=bind,source="$HOST_SCRIPTS_DIR",target="$TEMP_SCRIPTS_DIR" \
-	--mount=type=bind,source="$HOST_CODIUM_EXTS_DIR",target="$TEMP_CODIUM_EXTS_DIR" \
-	gosu "$CONT_USER" bash -c "$TEMP_SCRIPTS_DIR/container/install_codium_exts.bash '$CONT_CODIUM_EXTS' '$TEMP_CODIUM_EXTS_DIR'"
-RUN --mount=type=bind,source="$HOST_SCRIPTS_DIR",target="$TEMP_SCRIPTS_DIR" \
-	--mount=type=bind,source="$HOST_CONFIGS_DIR",target="$TEMP_CONFIGS_DIR" \
 	--mount=type=bind,source="$HOST_SSH_DIR",target="$TEMP_SSH_DIR" \
 	--mount=type=bind,source="$HOST_USERS_PASS_DIR",target="$TEMP_USERS_PASS_DIR" \
-	--mount=type=bind,source="$HOST_CODIUM_EXTS_DIR",target="$TEMP_CODIUM_EXTS_DIR" \
 	--mount=type=cache,target=/var/cache/apt \
+	bash -c "$TEMP_SCRIPTS_DIR/container/create_user.bash" && \
+	bash -c "$TEMP_SCRIPTS_DIR/container/install_packages.bash" && \
+	bash -c "$TEMP_SCRIPTS_DIR/container/create_projdir.bash" && \
+	bash -c "$TEMP_SCRIPTS_DIR/container/configure_services.bash" && \
+	bash -c "$TEMP_SCRIPTS_DIR/container/configure_generic.bash" && \
+	gosu "$CONT_USER" bash -c "$TEMP_SCRIPTS_DIR/container/install_codium-server.bash" && \
+	gosu "$CONT_USER" bash -c "$TEMP_SCRIPTS_DIR/container/install_codium_exts.bash"
+ARG CONT_PYTHON_VERS
+ARG HOST_PYTHON_VERS_FILE_DIR
+ARG CONT_POETRY_PYTHON_VERS
+ARG CONT_PYTHON_BUILD_BUILD_PATH="/mnt/python_build_build"
+ARG CONT_PYTHON_BUILD_CACHE_PATH="/mnt/python_build_cache"
+RUN --mount=type=bind,source="$HOST_SCRIPTS_DIR",target="$TEMP_SCRIPTS_DIR" \
+	--mount=type=bind,source="$HOST_PYTHON_VERS_FILE_DIR",target="$TEMP_PYTHON_VERS_FILE_DIR" \
+	--mount=type=cache,uid="$CONT_USER_UID",gid="$CONT_USER_UID",target="$CONT_PYTHON_BUILD_BUILD_PATH" \
+	--mount=type=cache,uid="$CONT_USER_UID",gid="$CONT_USER_UID",target="$CONT_PYTHON_BUILD_CACHE_PATH" \
 	gosu "$CONT_USER" bash -c "$TEMP_SCRIPTS_DIR/container/install_py-poe.bash"
 
 # Defaults
