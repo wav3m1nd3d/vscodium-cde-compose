@@ -42,19 +42,3 @@ fi
 if [[ -z "$CONT_POETRY_PYTHON_VERS" ]]; then
 	die 1 'CONT_POETRY_PYTHON_VERS should be set'
 fi
-
-pyenv install -ks "$CONT_POETRY_PYTHON_VERS"
-pyenv global "$CONT_POETRY_PYTHON_VERS"
-
-
-# Install poetry
-poetry_pip="$(pyenv which pip)"
-"$poetry_pip" install -U pip setuptools
-"$poetry_pip" install poetry
-
-
-# Configure poetry
-poetry_venv="$(pyenv which poetry)"
-poetry_venv="${poetry_venv%/*}"
-echo 'export PATH="$PATH:'"$poetry_venv\"" >> ~/.bashrc
-"$(pyenv which poetry)" completions bash >> ~/.bash_completion
