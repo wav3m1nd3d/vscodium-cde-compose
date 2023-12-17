@@ -26,7 +26,7 @@ eval "$(pyenv virtualenv-init -)"
 # Install pyenv-managed python
 if [[ -n "$CONT_PYTHON_VERS" ]]; then
 	if [[ -f "$TEMP_PYTHON_VERS_FILE_DIR/.python-version" ]]; then
-		err 'Overriding .python-version with CONT_PYTHON_VERS'
+		msg 'Overriding .python-version with CONT_PYTHON_VERS' >&2
 	fi
 	for py_ver in $CONT_PYTHON_VERS; do
 		pyenv install -k "$py_ver"
