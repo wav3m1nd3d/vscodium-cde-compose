@@ -13,23 +13,26 @@ ARG CONT_USER_UID
 ARG CONT_USER_GROUPS
 ARG CONT_PKGS
 ARG CONT_BASE_PKGS="\
-	bash \
-	sudo \
 	wget \
 	grep \
 	sed \
 	coreutils \
-	procps \
 	openssh-server \
 	ca-certificates \
 	whois"
 ARG CONT_CDE_DIR
 ARG HOST_SSH_KEYPAIR_NAME
+
 RUN --mount=type=bind,source="$HOST_SCRIPTS_DIR",target="$TEMP_SCRIPTS_DIR" \
-	--mount=type=cache,target=/var/cache/apt \
-	bash -c "$TEMP_SCRIPTS_DIR/container/bootstrap_create_user.bash" && \
-	bash -c "$TEMP_SCRIPTS_DIR/container/install_packages.bash" && \
-	bash -c "$TEMP_SCRIPTS_DIR/container/bootstrap_create_cdedir.bash"
+	bash -c "$TEMP_SCRIPTS_DIR/container/bootstrap_create_user.bash '$CONT_USER' '$CONT_USER_GROUPS' '$CONT_USER_UID'"
+
+RUN --mount=type=bind,source="$HOST_SCRIPTS_DIR",target="$TEMP_SCRIPTS_DIR" \
+	--mount=type=cache,target=/var/cache/apt,sharing=locked \
+	--mount=type=cache,target=/var/lib/apt,sharing=locked \
+	bash -c "$TEMP_SCRIPTS_DIR/container/install_packages.bash '$CONT_BASE_PKGS' '$CONT_PKGS'"
+
+RUN --mount=type=bind,source="$HOST_SCRIPTS_DIR",target="$TEMP_SCRIPTS_DIR" \
+	bash -c "$TEMP_SCRIPTS_DIR/container/bootstrap_create_cdedir.bash '$CONT_USER' '$CONT_CDE_DIR'"
 
 # Defaults
 USER "$CONT_USER"
