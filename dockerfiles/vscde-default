@@ -84,21 +84,24 @@ RUN --mount=type=bind,source="$HOST_SCRIPTS_DIR",target="$TEMP_SCRIPTS_DIR" \
 ARG CONT_PYTHON_VERS
 ARG HOST_PYTHON_VERS_FILE_DIR
 ARG CONT_POETRY_PYTHON_VERS
-ARG CONT_PYTHON_BUILD_BUILD_PATH="/mnt/python_build_build"
-ARG CONT_PYTHON_BUILD_CACHE_PATH="/mnt/python_build_cache"
+ARG CONT_PYTHON_BUILD_BUILD_PATH="/var/cache/python_build_build"
+ARG CONT_PYTHON_BUILD_CACHE_PATH="/var/cache/python_build_cache"
+ARG CONT_PYENV_VERSIONS_DIR="/var/cache/pyenv-versions"
+
+USER "$CONT_USER"
 
 RUN --mount=type=bind,source="$HOST_SCRIPTS_DIR",target="$TEMP_SCRIPTS_DIR" \
 	--mount=type=bind,source="$HOST_PYTHON_VERS_FILE_DIR",target="$TEMP_PYTHON_VERS_FILE_DIR" \
 	--mount=type=cache,uid="$CONT_USER_UID",gid="$CONT_USER_UID",target="$CONT_PYTHON_BUILD_BUILD_PATH" \
 	--mount=type=cache,uid="$CONT_USER_UID",gid="$CONT_USER_UID",target="$CONT_PYTHON_BUILD_CACHE_PATH" \
-	gosu "$CONT_USER" bash -c "$TEMP_SCRIPTS_DIR/container/install_pyenv.bash '$CONT_PYTHON_VERS' '$CONT_POETRY_PYTHON_VERS'"
+	--mount=type=cache,uid="$CONT_USER_UID",gid="$CONT_USER_UID",target="$CONT_PYENV_VERSIONS_DIR" \
+	bash -c "$TEMP_SCRIPTS_DIR/container/install_pyenv.bash '$CONT_PYTHON_VERS' '$CONT_POETRY_PYTHON_VERS'"
 
 RUN --mount=type=bind,source="$HOST_SCRIPTS_DIR",target="$TEMP_SCRIPTS_DIR" \
 	--mount=type=bind,source="$HOST_PYTHON_VERS_FILE_DIR",target="$TEMP_PYTHON_VERS_FILE_DIR" \
-	gosu "$CONT_USER" bash -c "$TEMP_SCRIPTS_DIR/container/install_poetry.bash '$CONT_POETRY_PYTHON_VERS'"
+	bash -c "$TEMP_SCRIPTS_DIR/container/install_poetry.bash '$CONT_POETRY_PYTHON_VERS'"
 
 # Defaults
-USER "$CONT_USER"
 WORKDIR "$CONT_PROJ_DIR"
 ENTRYPOINT ["/bin/bash", "-c"]
 ENV CDE_HOST_SCRIPTS_DIR "$HOST_SCRIPTS_DIR"

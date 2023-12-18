@@ -4,6 +4,7 @@ set -e
 
 SCRIPT_NAME="${BASH_SOURCE##*/}"
 source "$TEMP_SCRIPTS_DIR/libs/lib_msg.bash"
+source "$TEMP_SCRIPTS_DIR/libs/lib_pyenv_python_ver_cache.bash"
 
 
 # Install pyenv
@@ -29,11 +30,11 @@ if [[ -n "$CONT_PYTHON_VERS" ]]; then
 		msg 'Overriding .python-version with CONT_PYTHON_VERS' >&2
 	fi
 	for py_ver in $CONT_PYTHON_VERS; do
-		pyenv install -k "$py_ver"
+		install_python_ver "$py_ver"
 	done
 elif [[ -f "$TEMP_PYTHON_VERS_FILE_DIR/.python-version" ]]; then
 	for py_ver in $(cat $TEMP_PYTHON_VERS_FILE_DIR/.python-version); do
-		pyenv install -k "$py_ver"
+		install_python_ver "$py_ver"
 	done
 else
 	die 1 '$HOST_PYTHON_VERS_FILE_DIR/.python-version should exist or CONT_PYTHON_VERS should be set'
