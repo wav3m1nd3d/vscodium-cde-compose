@@ -13,8 +13,12 @@
 
 # About
 
-This project is an [Abstracted Development Environment](https://github.com/wav3m1nd3d/ade-spec "ADE Specification") that utilizes containerization technology as abstraction layer, thus called for short a [CDE](https://github.com/wav3m1nd3d/ade-spec/README.md#CDE "Containerized Development Environment"), that integrates seamlessly with VSCodium IDE using one of the industry de-facto-standard [compose specification](https://compose-spec.io/) compliant software like Docker or Podman automatizing all of the setup process.
+This project is an [Abstracted Development Environment](https://github.com/wav3m1nd3d/ade-spec "ADE Specification") that utilizes containerization technology as abstraction layer, thus called for short a [CDE](https://github.com/wav3m1nd3d/ade-spec/README.md#CDE "Containerized Development Environment"), that integrates seamlessly with VSCodium IDE using one of the industry de-facto-standard [compose specification](https://compose-spec.io/) compliant software like Docker or Podman.
 
+
+## What can it do?
+
+Put simply: _**Cross-Platform**_ development with _**custom software stack**_ even up to programming language choice with _**intuitive configuration**_ and _**single command to setup everything**_
 
 <details open>
 <summary>
