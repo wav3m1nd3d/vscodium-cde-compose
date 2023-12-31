@@ -1,7 +1,6 @@
 find_compose() {
-	local -n find_compose_ref="$1"
-	local start_dir="$2"
-	local -i search_depth=$3
+	local start_dir="$1"
+	local -i search_depth=$2
 	
 	# Find root cde directory by locating docker-compose.yml in parent directories
 	start_pwd="$PWD"
@@ -33,14 +32,13 @@ find_compose() {
 		cd "$start_pwd"
 		return 1
 	fi
-	find_compose_ref="$entry"
+	CDE_BAREBOOT_COMPOSE="$entry"
 	cd "$start_pwd"
 }
 
 find_compose_env() {
-	local -n find_compose_env_ref="$1"
-	local start_dir="$2"
-	local -i search_depth=$3
+	local start_dir="$1"
+	local -i search_depth=$2
 
 	# Search in current and child directories for *.env file
 	start_pwd="$PWD"
@@ -59,7 +57,7 @@ find_compose_env() {
 			if [[ -f "$entry" ]]; then
 				if [[ ${#found_entries[@]} -eq 0 ]]; then
 					if [[ "$entry" == ".env" ]]; then
-						find_compose_env_ref="$entry"
+						CDE_BAREBOOT_COMPOSE_ENV="$entry"
 						cd "$start_pwd"
 						return 0
 					elif [[ "$entry" == *".env" ]]; then
@@ -68,7 +66,7 @@ find_compose_env() {
 					fi
 				else
 					if [[ "$entry" == ".env" ]]; then
-						find_compose_env_ref="$found_entries"
+						CDE_BAREBOOT_COMPOSE_ENV="$found_entries"
 						cd "$start_pwd"
 						return 0
 					elif [[ "$entry" == *".env" ]]; then
@@ -77,7 +75,7 @@ find_compose_env() {
 							cd "$start_pwd"
 							return 1
 						else
-							find_compose_env_ref="$entry"
+							CDE_BAREBOOT_COMPOSE_ENV="$entry"
 							cd "$start_pwd"
 							return 0
 						fi
@@ -102,7 +100,7 @@ find_compose_env() {
 		cd "$start_pwd"
 		return 1
 	fi
-	find_compose_env_ref="$found_entries"
+	CDE_BAREBOOT_COMPOSE_ENV="$found_entries"
 	cd "$start_pwd"
 	return 0
 }
