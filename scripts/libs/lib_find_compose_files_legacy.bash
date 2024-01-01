@@ -70,7 +70,7 @@ find_compose_env() {
 						cd "$start_pwd"
 						return 0
 					elif [[ "$entry" == *".env" ]]; then
-						if [[ $min_depth -eq $rel_depth ]]; then
+						if [[ $min_depth -eq $rel_depth && "${found_entries[0]}" != "$entry" ]]; then
 							printf "${0##*/}: E: Found multiple \"*.env\" files at same search depth level, can't decide\n"
 							cd "$start_pwd"
 							return 1

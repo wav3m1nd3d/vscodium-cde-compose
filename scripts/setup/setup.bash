@@ -7,7 +7,7 @@ if [ -n "${#BASH_VERSINFO[@]}" ] && [ "${#BASH_VERSINFO[@]}" -lt 2 ]; then
 	echo 'Error: Cannot get bash version information: consider updating' >&2
 	exit 1
 fi
-[[ "${BASH_VERSINFO[0]}" -lt 4 && "${#BASH_VERSINFO[1]}" -lt 3 ]] || CDE_LEGACY_MODE=1
+[[ "${BASH_VERSINFO[0]}" -lt 4 && "${#BASH_VERSINFO[1]}" -lt 3 ]] && CDE_LEGACY_MODE=1
 set -e
 
 

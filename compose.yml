@@ -1,9 +1,10 @@
 version: '3'
 
 services:
-
+  
   cde-bootstrap:
-    env-file: ".env"
+    env_file:
+      - ".env"
     build:
       tags:
         - "${IMG_NAME}_vscde-bootstrap:${IMG_TAG}"
@@ -14,6 +15,7 @@ services:
         base-image: "$BASE_IMG_NAME:$BASE_IMG_TAG"
       context: ./
       dockerfile: "$HOST_DOCKERFILES_DIR/vscde-bootstrap"
+      network: host
       args:
         # Base
         BASE_IMG_NAME:            "$BASE_IMG_NAME"
@@ -28,20 +30,20 @@ services:
         HOST_SSH_KEYPAIR_NAME:    "$HOST_SSH_KEYPAIR_NAME"
         # Container directories
         CONT_CDE_DIR:             "$CONT_CDE_DIR"
-      network: cde-net
     stdin_open: true
     tty: true
     userns_mode: "$CONT_USERNS_MODE"
     stop_grace_period: 0s
     restart: "no"
-    network: none
+    network_mode: "none"
     volumes:
       - type: bind
         source: "$HOST_CDE_DIR"
         target: "$CONT_CDE_DIR"
 
   cde:
-    env-file: ".env"
+    env_file:
+      - ".env"
     build:
       tags:
         - "${IMG_NAME}_vscde:${IMG_TAG}"
@@ -52,6 +54,7 @@ services:
         base-image: "$BASE_IMG_NAME:$BASE_IMG_TAG"
       context: ./
       dockerfile: "$HOST_DOCKERFILES_DIR/vscde-default"
+      network: host
       args:
         BASE_IMG_NAME:         "$BASE_IMG_NAME"
         BASE_IMG_TAG:          "$BASE_IMG_TAG"
@@ -68,19 +71,19 @@ services:
         HOST_SSH_KEYPAIR_NAME: "$HOST_SSH_KEYPAIR_NAME"
         CONT_PKGS:             "$CONT_PKGS"
         CONT_CODIUM_EXTS:      "$CONT_CODIUM_EXTS"
-      network: "cde-net"
     tty: true
     stdin_open: false
     userns_mode: "$CONT_USERNS_MODE"
     stop_grace_period: 0s
     restart: "no"
-    network: "cde-net"
-    ports: "$CONT_IP:$CONT_SSH_PORT:2022"
+    networks:
+      - "cde-net"
+    ports:
+      - "$CONT_IP:$CONT_SSH_PORT:2022"
     volumes:
       - type: bind
         source: "$HOST_PROJ_DIR"
         target: "$CONT_PROJ_DIR"
-
 
 networks:
   cde-net:
