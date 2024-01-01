@@ -13,12 +13,16 @@
 
 # About
 
-This project is an [Abstracted Development Environment](https://github.com/wav3m1nd3d/ade-spec "ADE Specification") that utilizes containerization technology as abstraction layer, thus called for short a [CDE](https://github.com/wav3m1nd3d/ade-spec/README.md#CDE "Containerized Development Environment"), that integrates seamlessly with VSCodium IDE using one of the industry de-facto-standard [compose specification](https://compose-spec.io/) compliant software like Docker or Podman.
+This project is an [_Abstracted Development Environment_](https://github.com/wav3m1nd3d/ade-spec "ADE Specification") that utilizes containerization technology as abstraction layer, thus called for short a [_CDE_](https://github.com/wav3m1nd3d/ade-spec/README.md#CDE "Containerized Development Environment"), that integrates seamlessly with VSCodium IDE using one of the industry de-facto-standard [compose specification](https://compose-spec.io/) compliant software like _**Docker**_ or _**Podman**_ to _**reduce to a minimum time spent on setting up projects**_ on developers machine, and letting possible _**cross-platform development with minimal amount of dependencies**_ required to be installed on host.
 
 
 ## What can it do?
 
-Put simply: _**Cross-Platform**_ development with _**custom software stack**_ even up to programming language choice with _**intuitive configuration**_ and _**single command to setup everything**_
+Put simply: projects using this CDE let you develop seamlessly on multiple platforms like _**Windows, Mac, Linux**_ and reduce all _**setup process**_ to a constant minimum required amount of work that ususally trickles down to _**running a single command**_.
+
+There should be _**little to no maintainance and entry costs**_: it's as easy as _**adding a subtree**_ with `git subtree add` and performing sometimes `git subtree pull` to upstream your CDE or _**using a GitHub Template**_ containing a template project with already seamlessly working software stack with sane choices and defaults (for now only Python).
+
+Afterall, the main advantageous characteristic is that this CDE can be adapted to _**your own software stack**_, even choosing _**programming language**_ and drop-in your _**custom setup and configuration scripts**_ to shape perfectly your workflow of choice.
 
 <details open>
 <summary>
@@ -44,9 +48,10 @@ Refer to [documentation](docs/guide.md) to see what's available
 # Requirements
 
 * Internet connection to clone repo and build container image
-* Linux / Mac / Windows (WSL2/Hyper-V)
+* Linux / Mac / Windows (WSL2)
 * [`VSCodium`](https://vscodium.com) with [`Open Remote - SSH`](https://open-vsx.org/extension/jeanp413/open-remote-ssh) extension
-* `OpenSSH` client (builtin in Windows, Mac)
+* `OpenSSH` client (builtin in Windows WSL2, Mac)
+* `bash` (builtin in Windows WSL2, Mac, almost any Linux distribution)
 * `podman` and `podman-compose` or `docker`
 
 # Quick Start
