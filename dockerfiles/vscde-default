@@ -18,7 +18,7 @@ ARG TEMP_SSH_DIR="/mnt/ssh"
 ARG TEMP_USERS_PASS_DIR="/mnt/users"
 ARG TEMP_CACHE_DIR="/mnt/cache"
 ARG TEMP_CODIUM_EXTS_DIR="/mnt/codium-exts"
-
+ARG TEMP_PYTHON_VERS_FILE_DIR="/mnt/python-version-dir"
 ARG CONT_USER
 ARG CONT_USER_UID
 ARG CONT_USER_GROUPS
@@ -27,13 +27,29 @@ ARG CONT_BASE_PKGS="\
 	supervisor \
 	gosu \
 	wget \
+	curl \
 	grep \
 	sed \
 	coreutils \
 	openssh-server \
 	ca-certificates \
 	whois \
-	locales"
+	locales \
+	git \
+	build-essential \
+	libssl-dev \
+	zlib1g-dev \
+	libbz2-dev \
+	libreadline-dev \
+	libsqlite3-dev \
+	curl \
+	libncursesw5-dev \
+	xz-utils \
+	tk-dev \
+	libxml2-dev \
+	libxmlsec1-dev \
+	libffi-dev \
+	liblzma-dev"
 ARG CONT_PROJ_DIR
 ARG CONT_CDE_DIR
 ARG HOST_SSH_KEYPAIR_NAME
@@ -79,8 +95,27 @@ RUN --mount=type=bind,source="$HOST_SCRIPTS_DIR",target="$TEMP_SCRIPTS_DIR" \
 	--mount=type=bind,source="$HOST_CODIUM_EXTS_DIR",target="$TEMP_CODIUM_EXTS_DIR" \
 	gosu "$CONT_USER" bash -c "$TEMP_SCRIPTS_DIR/container/install_codium_exts.bash '$CONT_CODIUM_EXTS' '$TEMP_CODIUM_EXTS_DIR'"
 
-# Defaults
+ARG CONT_PYTHON_VERS
+ARG HOST_PYTHON_VERS_FILE_DIR
+ARG CONT_POETRY_PYTHON_VERS
+ARG CONT_PYTHON_BUILD_BUILD_PATH="/var/cache/python_build_build"
+ARG CONT_PYTHON_BUILD_CACHE_PATH="/var/cache/python_build_cache"
+ARG CONT_PYENV_VERSIONS_DIR="/var/cache/pyenv-versions"
+
 USER "$CONT_USER"
+
+RUN --mount=type=bind,source="$HOST_SCRIPTS_DIR",target="$TEMP_SCRIPTS_DIR" \
+	--mount=type=bind,source="$HOST_PYTHON_VERS_FILE_DIR",target="$TEMP_PYTHON_VERS_FILE_DIR" \
+	--mount=type=cache,uid="$CONT_USER_UID",gid="$CONT_USER_UID",target="$CONT_PYTHON_BUILD_BUILD_PATH" \
+	--mount=type=cache,uid="$CONT_USER_UID",gid="$CONT_USER_UID",target="$CONT_PYTHON_BUILD_CACHE_PATH" \
+	--mount=type=cache,uid="$CONT_USER_UID",gid="$CONT_USER_UID",target="$CONT_PYENV_VERSIONS_DIR" \
+	bash -c "$TEMP_SCRIPTS_DIR/container/install_pyenv.bash '$CONT_PYTHON_VERS' '$CONT_POETRY_PYTHON_VERS'"
+
+RUN --mount=type=bind,source="$HOST_SCRIPTS_DIR",target="$TEMP_SCRIPTS_DIR" \
+	--mount=type=bind,source="$HOST_PYTHON_VERS_FILE_DIR",target="$TEMP_PYTHON_VERS_FILE_DIR" \
+	bash -c "$TEMP_SCRIPTS_DIR/container/install_poetry.bash '$CONT_POETRY_PYTHON_VERS'"
+
+# Defaults
 WORKDIR "$CONT_PROJ_DIR"
 ENTRYPOINT ["/bin/bash", "-c"]
 ENV CDE_HOST_SCRIPTS_DIR "$HOST_SCRIPTS_DIR"

@@ -73,6 +73,9 @@ services:
         HOST_CACHE_DIR:              "$HOST_CACHE_DIR"
         CONT_CODIUM_EXTS:            "$CONT_CODIUM_EXTS"
         CONT_GIT_CONFIG_INHERITANCE: "$CONT_GIT_CONFIG_INHERITANCE"
+        CONT_PYTHON_VERS:            "$CONT_PYTHON_VERS"
+        HOST_PYTHON_VERS_FILE_DIR:   "$HOST_PYTHON_VERS_FILE_DIR"
+        CONT_POETRY_PYTHON_VERS:     "$CONT_POETRY_PYTHON_VERS"
     tty: true
     stdin_open: false
     userns_mode: "$CONT_USERNS_MODE"
