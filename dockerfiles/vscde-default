@@ -70,4 +70,4 @@ WORKDIR "$CONT_PROJ_DIR"
 ENTRYPOINT ["/bin/bash", "-c"]
 ENV CDE_HOST_SCRIPTS_DIR "$HOST_SCRIPTS_DIR"
 ENV ENV="/etc/profile"
-CMD ["if [[ \"$(whoami)\" == 'root' ]]; then /usr/bin/supervisord; else /usr/bin/supervisord -c /opt/supervisor/supervisord.conf; fi"]
+CMD ["if [[ \"$(whoami)\" == 'root' ]]; then /usr/bin/supervisord; else /usr/bin/supervisord -c $HOME/.local/etc/supervisor/supervisord.conf; fi"]

@@ -15,42 +15,40 @@ setup_ssh() {
 		eval $(ssh-agent -s) > /dev/null
 	fi
 }
+
 configure_supervisord_root() {
 	apply_conf "root" "supervisord" "/etc/supervisor/supervisord.conf"
 }
 
 configure_supervisord_user() {
-	mkdir -p /opt/{run,log/supervisor,supervisor}
-	chown -R "$CONT_USER:$CONT_USER" /opt/run
-	chown -R "$CONT_USER:$CONT_USER" /opt/log
-	chown -R "$CONT_USER:$CONT_USER" /opt/supervisor
-	apply_conf "user" "supervisord" "/opt/supervisor/supervisord.conf"
+	mkdir -p $home_dir/.local/{run,log,etc/supervisor}
+	chown -R $CONT_USER:$CONT_USER $home_dir/.local
+	apply_conf user supervisord $home_dir/.local/etc/supervisor/supervisord.conf
 }
 
 configure_ssh_root() {
 	mkdir -p /var/run/sshd
-	apply_conf "root" "sshd_config" "/etc/ssh/sshd_config"
+	apply_conf root sshd_config /etc/ssh/sshd_config
 }
 
 configure_ssh_user() {
-	mkdir -p /opt/{run/sshd,ssh/etc/ssh}
-	chown -R "$CONT_USER:$CONT_USER" /opt/run
-	chown -R "$CONT_USER:$CONT_USER" /opt/ssh
-	apply_conf "user" "sshd_config" "/opt/ssh/sshd_config"
+	mkdir -p $home_dir/.local/{run/sshd,log,etc/ssh}
+	chown -R $CONT_USER:$CONT_USER $home_dir/.local
+	apply_conf user sshd_config $home_dir/.local/etc/ssh/sshd_config
 }
 
 
 # Configure supervisor[d] and ssh[d]
 if [[ "$CONT_USER" == 'root' ]]; then
-	home_dir="/root"
+	home_dir=/root
 	configure_supervisord_root
 	configure_ssh_root
 	setup_ssh
-	ssh-keygen -A 
+	ssh-keygen -A
 else
-	home_dir="/home/$CONT_USER"
+	home_dir=/home/$CONT_USER
 	configure_supervisord_user
 	configure_ssh_user
 	setup_ssh
-	gosu "$CONT_USER" ssh-keygen -Af /opt/ssh
+	gosu $CONT_USER ssh-keygen -Af $home_dir/.local
 fi
