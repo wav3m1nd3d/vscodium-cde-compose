@@ -76,7 +76,7 @@ fi
 
 $compose_cmd -f "$CDE_BAREBOOT_COMPOSE" --env-file "$CDE_BAREBOOT_COMPOSE_ENV" build cde-bootstrap
 $compose_cmd -f "$CDE_BAREBOOT_COMPOSE" --env-file "$CDE_BAREBOOT_COMPOSE_ENV" run cde-bootstrap
-if [ -z "$SSH_AGENT_PID" ] || ! ps -p "$SSH_AGENT_PID" > /dev/null; then
+if [ -z "$SSH_AUTH_SOCK" ]; then
 	eval $(ssh-agent -s) > /dev/null
 fi
 ssh-add "$CDE_HOST_SSH_DIR/$CDE_HOST_SSH_KEYPAIR_NAME"
