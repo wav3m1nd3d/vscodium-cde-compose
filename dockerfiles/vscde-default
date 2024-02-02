@@ -37,16 +37,22 @@ ARG HOST_SSH_KEYPAIR_NAME
 ARG CONT_CODIUM_EXTS
 
 RUN --mount=type=bind,source="$HOST_SCRIPTS_DIR",target="$TEMP_SCRIPTS_DIR" \
-	--mount=type=bind,source="$HOST_USERS_PASS_DIR",target="$TEMP_USERS_PASS_DIR" \
-	bash -c "$TEMP_SCRIPTS_DIR/container/create_user.bash '$CONT_USER' '$CONT_USER_UID' '$CONT_USER_GROUPS'"
-
-RUN --mount=type=bind,source="$HOST_SCRIPTS_DIR",target="$TEMP_SCRIPTS_DIR" \
 	--mount=type=cache,target=/var/cache/apt,sharing=locked \
 	--mount=type=cache,target=/var/lib/apt,sharing=locked \
 	bash -c "$TEMP_SCRIPTS_DIR/container/install_packages.bash '$CONT_BASE_PKGS' '$CONT_PKGS'"
 
+COPY $HOST_USERS_PASS_DIR/* /dev/null
+
+RUN --mount=type=bind,source="$HOST_SCRIPTS_DIR",target="$TEMP_SCRIPTS_DIR" \
+	--mount=type=bind,source="$HOST_USERS_PASS_DIR",target="$TEMP_USERS_PASS_DIR" \
+	bash -c "$TEMP_SCRIPTS_DIR/container/create_user.bash '$CONT_USER' '$CONT_USER_UID' '$CONT_USER_GROUPS'"
+
 RUN --mount=type=bind,source="$HOST_SCRIPTS_DIR",target="$TEMP_SCRIPTS_DIR" \
 	bash -c "$TEMP_SCRIPTS_DIR/container/create_projdir.bash '$CONT_PROJ_DIR' '$CONT_USER'"
+
+COPY $HOST_CONFIGS_DIR/* /dev/null
+COPY $HOST_SSH_DIR/* /dev/null
+COPY $HOST_CODIUM_EXTS_DIR/* /dev/null
 
 RUN --mount=type=bind,source="$HOST_SCRIPTS_DIR",target="$TEMP_SCRIPTS_DIR" \
 	--mount=type=bind,source="$HOST_SSH_DIR",target="$TEMP_SSH_DIR" \
