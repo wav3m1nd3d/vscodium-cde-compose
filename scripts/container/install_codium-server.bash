@@ -1,13 +1,9 @@
 #!/bin/bash
-
 # Server installation script
 
 TMP_DIR="${XDG_RUNTIME_DIR:-"/tmp"}"
 
-DISTRO_VERSION="1.85.1"
-DISTRO_COMMIT="08e6c15293922dd53a864bb041be381322fee401"
-DISTRO_QUALITY="stable"
-DISTRO_VSCODIUM_RELEASE="23257"
+source "$TEMP_CACHE_DIR/lib_product.bash" || exit 1
 
 SERVER_APP_NAME="codium-server"
 SERVER_INITIAL_EXTENSIONS=""
@@ -29,7 +25,7 @@ PLATFORM=
 
 # Mimic output from logs of remote-ssh extension
 print_install_results_and_exit() {
-    echo "3de4e5b4279593f4e448ea9b: start"
+    echo "bf651e6ed60997ff4b11bef6: start"
     echo "exitCode==$1=="
     echo "listeningOn==$LISTENING_ON=="
     echo "connectionToken==$SERVER_CONNECTION_TOKEN=="
@@ -39,7 +35,7 @@ print_install_results_and_exit() {
     echo "platform==$PLATFORM=="
     echo "tmpDir==$TMP_DIR=="
     
-    echo "3de4e5b4279593f4e448ea9b: end"
+    echo "bf651e6ed60997ff4b11bef6: end"
     exit 0
 }
 
@@ -164,7 +160,7 @@ if [[ -z $SERVER_RUNNING_PROCESS ]]; then
 
     touch $SERVER_TOKENFILE
     chmod 600 $SERVER_TOKENFILE
-    SERVER_CONNECTION_TOKEN="0ab89769-8171-453c-8767-c97b8ac47801"
+    SERVER_CONNECTION_TOKEN="9d71f9ff-50c7-4f2a-99e8-246e6c85010d"
     echo $SERVER_CONNECTION_TOKEN > $SERVER_TOKENFILE
 
     $SERVER_SCRIPT --start-server --host=127.0.0.1 $SERVER_LISTEN_FLAG $SERVER_INITIAL_EXTENSIONS --connection-token-file $SERVER_TOKENFILE --telemetry-level off --enable-remote-auto-shutdown --accept-server-license-terms &> $SERVER_LOGFILE &

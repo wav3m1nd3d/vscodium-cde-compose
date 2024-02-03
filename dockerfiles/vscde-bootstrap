@@ -19,7 +19,8 @@ ARG CONT_BASE_PKGS="\
 	coreutils \
 	openssh-server \
 	ca-certificates \
-	whois"
+	whois \
+	jq"
 ARG CONT_CDE_DIR
 ARG HOST_SSH_KEYPAIR_NAME
 
@@ -39,4 +40,4 @@ USER "$CONT_USER"
 WORKDIR "$CONT_CDE_DIR"
 ENTRYPOINT ["/bin/bash", "-c"]
 ENV CDE_HOST_SCRIPTS_DIR "$HOST_SCRIPTS_DIR"
-CMD ["$CDE_HOST_SCRIPTS_DIR/tools/generate_ssh_keypair.bash && $CDE_HOST_SCRIPTS_DIR/tools/generate_user_passwords.bash"]
+CMD ["$CDE_HOST_SCRIPTS_DIR/tools/generate_ssh_keypair.bash && $CDE_HOST_SCRIPTS_DIR/tools/generate_user_passwords.bash && $CDE_HOST_SCRIPTS_DIR/tools/parse_codium_versinfo.bash"]

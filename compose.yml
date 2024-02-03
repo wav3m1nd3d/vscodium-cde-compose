@@ -70,6 +70,7 @@ services:
         CONT_CDE_DIR:          "$CONT_CDE_DIR"
         HOST_SSH_KEYPAIR_NAME: "$HOST_SSH_KEYPAIR_NAME"
         CONT_PKGS:             "$CONT_PKGS"
+        HOST_CACHE_DIR:        "$HOST_CACHE_DIR"
         CONT_CODIUM_EXTS:      "$CONT_CODIUM_EXTS"
     tty: true
     stdin_open: false

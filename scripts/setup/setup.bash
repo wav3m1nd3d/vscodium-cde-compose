@@ -9,11 +9,14 @@ if [ -n "${#BASH_VERSINFO[@]}" ] && [ "${#BASH_VERSINFO[@]}" -lt 2 ]; then
 fi
 [[ "${BASH_VERSINFO[0]}" -lt 4 && "${#BASH_VERSINFO[1]}" -lt 3 ]] && CDE_LEGACY_MODE=1
 set -e
+SCRIPT_NAME="${BASH_SOURCE##*/}"
+echo "$SCRIPT_NAME: Done: Check bash requirements"
 
 
 CDE_BAREBOOT_LIBS_DIR="${BASH_SOURCE%/*}/../libs"
 
 source "$CDE_BAREBOOT_LIBS_DIR/lib_source_compose_env.bash"
+source "$CDE_BAREBOOT_LIBS_DIR/lib_msg.bash"
 if [[ "$CDE_LEGACY_MODE" ]]; then
 	source "$CDE_BAREBOOT_LIBS_DIR/lib_find_compose_files_legacy.bash"
 	CDE_BAREBOOT_ROOT_DIR=''
@@ -29,6 +32,8 @@ else
 	find_compose_env 'CDE_BAREBOOT_COMPOSE_ENV' "$CDE_BAREBOOT_ROOT_DIR" 3
 	source_compose_env "$CDE_BAREBOOT_COMPOSE_ENV"
 fi
+msg 'Done: Load libraries and environment variables'
+
 
 cont_missing=0
 compose_missing=0
@@ -48,36 +53,58 @@ elif command -v docker > /dev/null; then
 else
 	cont_missing=$(($cont_missing + 1))
 fi
+[[ $cont_missing -ge 1 ]] &&\
+	die 1 'No containerization platform commands were found: "podman", "docker"'
+[[ $compose_missing -ge 1 ]] &&\
+	die 1 'No compose platform commands were found: "podman-compose", "docker compose"'
+command -v ssh-add > /dev/null ||\
+	die 1 "An OpenSSH command wasn't found: \"ssh-add\""
+[[ -e "$CDE_BAREBOOT_COMPOSE_ENV" ]] ||\
+	die 1 "Compose file not found in path \"$CDE_BAREBOOT_COMPOSE_ENV\", edit current script relative compose file path variable \"rel_copmose_yml_file_path\""
+msg 'Done: Check required software availability'
 
-if [ $cont_missing -ge 1 ]; then
-	echo 'Error: No containerization platform commands were found: "podman", "docker"' >&2
-	exit 1
-fi
 
-if [ $compose_missing -ge 1 ]; then
-	echo 'Error: No compose platform commands were found: "podman-compose", "docker compose"' >&2
-	exit 1
+codium_path="$(command -v codium)"
+codium_dir="${codium_path%/*}"
+if [[ -n "$codium_dir" ]]; then
+	DEFAULT_HOST_CODIUM_RESOURCES_DIRS="$codium_dir/resources"
+	codium_dir="${codium_dir%/*}"
+	[[ -n "$codium_dir" ]] && DEFAULT_HOST_CODIUM_RESOURCES_DIRS+=":$codium_dir/resources"
+	DEFAULT_HOST_CODIUM_RESOURCES_DIRS+=':'
 fi
+DEFAULT_HOST_CODIUM_RESOURCES_DIRS+="/usr/share/codium/resources:/opt/vscodium-bin/resources"
 
-if ! command -v ssh-add > /dev/null; then
-	echo "Error: An OpenSSH command wasn't found: \"ssh-add\"" >&2
-	exit 1
-fi
+[[ -n "$CDE_HOST_CODIUM_RESOURCES_DIRS" ]] && CDE_HOST_CODIUM_RESOURCES_DIRS+=':'
+CDE_HOST_CODIUM_RESOURCES_DIRS+=$DEFAULT_HOST_CODIUM_RESOURCES_DIRS
 
-if ! [ -e "$CDE_BAREBOOT_COMPOSE_ENV" ]; then
-	echo "Error: Compose file not found in path \"$CDE_BAREBOOT_COMPOSE_ENV\", edit current script relative compose file path variable \"rel_copmose_yml_file_path\"" >&2
-	exit 1
-fi
+OLDIFS=$IFS
+IFS=':'
+for resources_dir in $CDE_HOST_CODIUM_RESOURCES_DIRS; do
+	[[ -z "$resources_dir" ]] && break
+	[[ -f "$resources_dir/app/product.json" ]] && { HOST_CODIUM_RESOURCES_DIR="$resources_dir"; break; }
+done
+IFS=$OLDIFS
+
+cp "$HOST_CODIUM_RESOURCES_DIR/app/product.json" "$CDE_HOST_CACHE_DIR"
+msg 'Done: Find and cache VSCodium version information'
+
 
 if command -v realpath > /dev/null; then
 	CDE_BAREBOOT_COMPOSE_ENV="$(realpath "$CDE_BAREBOOT_COMPOSE_ENV")"
 	CDE_BAREBOOT_COMPOSE="$(realpath "$CDE_BAREBOOT_COMPOSE")"
 fi
 
-$compose_cmd -f "$CDE_BAREBOOT_COMPOSE" --env-file "$CDE_BAREBOOT_COMPOSE_ENV" build cde-bootstrap
-$compose_cmd -f "$CDE_BAREBOOT_COMPOSE" --env-file "$CDE_BAREBOOT_COMPOSE_ENV" run cde-bootstrap
+$compose_cmd -f "$CDE_BAREBOOT_COMPOSE" build cde-bootstrap
+$compose_cmd -f "$CDE_BAREBOOT_COMPOSE" run cde-bootstrap
+msg 'Done: Bootstrap CDE'
+
+
 if [ -z "$SSH_AUTH_SOCK" ]; then
 	eval $(ssh-agent -s) > /dev/null
 fi
 ssh-add "$CDE_HOST_SSH_DIR/$CDE_HOST_SSH_KEYPAIR_NAME"
-$compose_cmd -f "$CDE_BAREBOOT_COMPOSE" --env-file "$CDE_BAREBOOT_COMPOSE_ENV" build cde
+$compose_cmd -f "$CDE_BAREBOOT_COMPOSE" build cde
+msg 'Done: Build CDE'
+
+
+echo -e "\n ----- \n\nTo spin up your CDE run:\n$compose_cmd -f "$CDE_BAREBOOT_COMPOSE" up cde"

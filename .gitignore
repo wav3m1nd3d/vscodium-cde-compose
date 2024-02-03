@@ -2,6 +2,7 @@
 secrets/ssh/*
 secrets/users/*
 codium-exts/*
+cache/*
 !.gitignore
 
 # Ignore worktrees

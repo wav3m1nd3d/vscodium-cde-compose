@@ -10,11 +10,13 @@ ARG HOST_SCRIPTS_DIR
 ARG HOST_CONFIGS_DIR
 ARG HOST_SSH_DIR
 ARG HOST_USERS_PASS_DIR
+ARG HOST_CACHE_DIR
 ARG HOST_CODIUM_EXTS_DIR
 ARG TEMP_SCRIPTS_DIR="/mnt/scripts"
 ARG TEMP_CONFIGS_DIR="/mnt/configs"
 ARG TEMP_SSH_DIR="/mnt/ssh"
 ARG TEMP_USERS_PASS_DIR="/mnt/users"
+ARG TEMP_CACHE_DIR="/mnt/cache"
 ARG TEMP_CODIUM_EXTS_DIR="/mnt/codium-exts"
 ARG CONT_USER
 ARG CONT_USER_UID
@@ -52,7 +54,6 @@ RUN --mount=type=bind,source="$HOST_SCRIPTS_DIR",target="$TEMP_SCRIPTS_DIR" \
 
 COPY $HOST_CONFIGS_DIR/* /dev/null
 COPY $HOST_SSH_DIR/* /dev/null
-COPY $HOST_CODIUM_EXTS_DIR/* /dev/null
 
 RUN --mount=type=bind,source="$HOST_SCRIPTS_DIR",target="$TEMP_SCRIPTS_DIR" \
 	--mount=type=bind,source="$HOST_SSH_DIR",target="$TEMP_SSH_DIR" \
@@ -63,8 +64,13 @@ RUN --mount=type=bind,source="$HOST_SCRIPTS_DIR",target="$TEMP_SCRIPTS_DIR" \
 	--mount=type=bind,source="$HOST_CONFIGS_DIR",target="$TEMP_CONFIGS_DIR" \
 	bash -c "$TEMP_SCRIPTS_DIR/container/configure_generic.bash '$CONT_USER'"
 
+COPY $HOST_CACHE_DIR/* /dev/null
+
 RUN --mount=type=bind,source="$HOST_SCRIPTS_DIR",target="$TEMP_SCRIPTS_DIR" \
+	--mount=type=bind,source="$HOST_CACHE_DIR",target="$TEMP_CACHE_DIR" \
 	gosu "$CONT_USER" bash -c "$TEMP_SCRIPTS_DIR/container/install_codium-server.bash"
+
+COPY $HOST_CODIUM_EXTS_DIR/* /dev/null
 
 RUN --mount=type=bind,source="$HOST_SCRIPTS_DIR",target="$TEMP_SCRIPTS_DIR" \
 	--mount=type=bind,source="$HOST_CODIUM_EXTS_DIR",target="$TEMP_CODIUM_EXTS_DIR" \
