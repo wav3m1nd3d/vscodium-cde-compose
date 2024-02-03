@@ -56,20 +56,20 @@ find_compose_env() {
 		for entry in "$PWD"/.* "$PWD"/*; do
 			if [[ -f "$entry" ]]; then
 				if [[ ${#found_entries[@]} -eq 0 ]]; then
-					if [[ "$entry" == ".env" ]]; then
+					if [[ "${entry##*/}" == ".env" ]]; then
 						CDE_BAREBOOT_COMPOSE_ENV="$entry"
 						cd "$start_pwd"
 						return 0
-					elif [[ "$entry" == *".env" ]]; then
+					elif [[ "${entry##*/}" == *".env" ]]; then
 						min_depth=$rel_depth
 						found_entries+=("$entry")
 					fi
 				else
-					if [[ "$entry" == ".env" ]]; then
+					if [[ "${entry##*/}" == ".env" ]]; then
 						CDE_BAREBOOT_COMPOSE_ENV="$found_entries"
 						cd "$start_pwd"
 						return 0
-					elif [[ "$entry" == *".env" ]]; then
+					elif [[ "${entry##*/}" == *".env" ]]; then
 						if [[ $min_depth -eq $rel_depth && "${found_entries[0]}" != "$entry" ]]; then
 							printf "${0##*/}: E: Found multiple \"*.env\" files at same search depth level, can't decide\n"
 							cd "$start_pwd"
