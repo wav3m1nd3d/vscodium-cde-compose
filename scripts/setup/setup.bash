@@ -85,7 +85,8 @@ for resources_dir in $CDE_HOST_CODIUM_RESOURCES_DIRS; do
 done
 IFS=$OLDIFS
 
-cp "$HOST_CODIUM_RESOURCES_DIR/app/product.json" "$CDE_HOST_CACHE_DIR"
+mkdir -p "$CDE_HOST_CACHE_DIR/raw-host-configs"
+cp "$HOST_CODIUM_RESOURCES_DIR/app/product.json" "$CDE_HOST_CACHE_DIR/raw-host-configs/codium_product.json"
 msg 'Done: Find and cache VSCodium version information'
 
 

@@ -18,6 +18,7 @@ ARG TEMP_SSH_DIR="/mnt/ssh"
 ARG TEMP_USERS_PASS_DIR="/mnt/users"
 ARG TEMP_CACHE_DIR="/mnt/cache"
 ARG TEMP_CODIUM_EXTS_DIR="/mnt/codium-exts"
+
 ARG CONT_USER
 ARG CONT_USER_UID
 ARG CONT_USER_GROUPS
@@ -64,7 +65,7 @@ RUN --mount=type=bind,source="$HOST_SCRIPTS_DIR",target="$TEMP_SCRIPTS_DIR" \
 	--mount=type=bind,source="$HOST_CONFIGS_DIR",target="$TEMP_CONFIGS_DIR" \
 	bash -c "$TEMP_SCRIPTS_DIR/container/configure_generic.bash '$CONT_USER'"
 
-COPY $HOST_CACHE_DIR/lib_product.bash /dev/null
+COPY $HOST_CACHE_DIR/local-configs/install_codium-serverrc.bash /dev/null
 
 RUN --mount=type=bind,source="$HOST_SCRIPTS_DIR",target="$TEMP_SCRIPTS_DIR" \
 	--mount=type=bind,source="$HOST_CACHE_DIR",target="$TEMP_CACHE_DIR" \

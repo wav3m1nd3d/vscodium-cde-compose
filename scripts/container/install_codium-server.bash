@@ -3,7 +3,7 @@
 
 TMP_DIR="${XDG_RUNTIME_DIR:-"/tmp"}"
 
-source "$TEMP_CACHE_DIR/lib_product.bash" || exit 1
+source "$TEMP_CACHE_DIR/local-configs/install_codium-serverrc.bash" || exit 1
 
 SERVER_APP_NAME="codium-server"
 SERVER_INITIAL_EXTENSIONS=""
