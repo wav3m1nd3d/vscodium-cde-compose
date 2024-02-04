@@ -64,7 +64,7 @@ RUN --mount=type=bind,source="$HOST_SCRIPTS_DIR",target="$TEMP_SCRIPTS_DIR" \
 	--mount=type=bind,source="$HOST_CONFIGS_DIR",target="$TEMP_CONFIGS_DIR" \
 	bash -c "$TEMP_SCRIPTS_DIR/container/configure_generic.bash '$CONT_USER'"
 
-COPY $HOST_CACHE_DIR/* /dev/null
+COPY $HOST_CACHE_DIR/lib_product.bash /dev/null
 
 RUN --mount=type=bind,source="$HOST_SCRIPTS_DIR",target="$TEMP_SCRIPTS_DIR" \
 	--mount=type=bind,source="$HOST_CACHE_DIR",target="$TEMP_CACHE_DIR" \
