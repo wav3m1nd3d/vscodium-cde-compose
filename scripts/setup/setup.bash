@@ -1,23 +1,25 @@
 #!/bin/bash
 if [ -z "$BASH" ]; then 
-	echo 'Error: Used shell is not "bash": consider installing it or setting up CDE manually' >&2
+	echo 'E: Used shell is not "bash": consider installing it or setting up CDE manually' >&2
 	exit 1
 fi
-if [ -n "${#BASH_VERSINFO[@]}" ] && [ "${#BASH_VERSINFO[@]}" -lt 2 ]; then
-	echo 'Error: Cannot get bash version information: consider updating' >&2
+if [ -z "${#BASH_VERSINFO[@]}" ] || [ ${#BASH_VERSINFO[@]} -lt 2 ]; then
+	echo 'E: Cannot get bash version information: consider updating' >&2
 	exit 1
 fi
-[[ "${BASH_VERSINFO[0]}" -lt 4 && "${#BASH_VERSINFO[1]}" -lt 3 ]] && CDE_LEGACY_MODE=1
 set -e
-SCRIPT_NAME="${BASH_SOURCE##*/}"
-echo "$SCRIPT_NAME: Done: Check bash requirements"
+[[ ${BASH_VERSINFO[0]} -lt 4 && ${#BASH_VERSINFO[1]} -lt 3 ]] && declare -i CDE_LEGACY_MODE=1
+
 
 
 CDE_BAREBOOT_LIBS_DIR="${BASH_SOURCE%/*}/../libs"
+SCRIPT_NAME="${BASH_SOURCE##*/}"
 
+echo "$SCRIPT_NAME: Loading libraries and environment variables"
 source "$CDE_BAREBOOT_LIBS_DIR/lib_source_compose_env.bash"
 source "$CDE_BAREBOOT_LIBS_DIR/lib_msg.bash"
-if [[ "$CDE_LEGACY_MODE" ]]; then
+source "$CDE_BAREBOOT_LIBS_DIR/lib_inherit_git_config.bash"
+if [[ $CDE_LEGACY_MODE -eq 1 ]]; then
 	source "$CDE_BAREBOOT_LIBS_DIR/lib_find_compose_files_legacy.bash"
 	CDE_BAREBOOT_ROOT_DIR=''
 	CDE_BAREBOOT_COMPOSE_ENV=''
@@ -32,80 +34,141 @@ else
 	find_compose_env 'CDE_BAREBOOT_COMPOSE_ENV' "$CDE_BAREBOOT_ROOT_DIR" 3
 	source_compose_env "$CDE_BAREBOOT_COMPOSE_ENV"
 fi
-msg 'Done: Load libraries and environment variables'
-
-
-cont_missing=0
-compose_missing=0
-
-if command -v podman > /dev/null; then
-	if command -v podman-compose > /dev/null; then
-		compose_cmd="podman-compose"
-	else
-		compose_missing=$(($compose_missing + 1))
-	fi
-elif command -v docker > /dev/null; then
-	if command -v docker compose > /dev/null; then
-		compose_cmd="docker compose"
-	else
-		compose_missing=$(($compose_missing + 1))
-	fi
-else
-	cont_missing=$(($cont_missing + 1))
-fi
-[[ $cont_missing -ge 1 ]] &&\
-	die 1 'No containerization platform commands were found: "podman", "docker"'
-[[ $compose_missing -ge 1 ]] &&\
-	die 1 'No compose platform commands were found: "podman-compose", "docker compose"'
-command -v ssh-add > /dev/null ||\
-	die 1 "An OpenSSH command wasn't found: \"ssh-add\""
-[[ -e "$CDE_BAREBOOT_COMPOSE_ENV" ]] ||\
-	die 1 "Compose file not found in path \"$CDE_BAREBOOT_COMPOSE_ENV\", edit current script relative compose file path variable \"rel_copmose_yml_file_path\""
-msg 'Done: Check required software availability'
-
-
-codium_path="$(command -v codium)"
-codium_dir="${codium_path%/*}"
-if [[ -n "$codium_dir" ]]; then
-	DEFAULT_HOST_CODIUM_RESOURCES_DIRS="$codium_dir/resources"
-	codium_dir="${codium_dir%/*}"
-	[[ -n "$codium_dir" ]] && DEFAULT_HOST_CODIUM_RESOURCES_DIRS+=":$codium_dir/resources"
-	DEFAULT_HOST_CODIUM_RESOURCES_DIRS+=':'
-fi
-DEFAULT_HOST_CODIUM_RESOURCES_DIRS+="/usr/share/codium/resources:/opt/vscodium-bin/resources"
-
-[[ -n "$CDE_HOST_CODIUM_RESOURCES_DIRS" ]] && CDE_HOST_CODIUM_RESOURCES_DIRS+=':'
-CDE_HOST_CODIUM_RESOURCES_DIRS+=$DEFAULT_HOST_CODIUM_RESOURCES_DIRS
-
-OLDIFS=$IFS
-IFS=':'
-for resources_dir in $CDE_HOST_CODIUM_RESOURCES_DIRS; do
-	[[ -z "$resources_dir" ]] && break
-	[[ -f "$resources_dir/app/product.json" ]] && { HOST_CODIUM_RESOURCES_DIR="$resources_dir"; break; }
-done
-IFS=$OLDIFS
-
-mkdir -p "$CDE_HOST_CACHE_DIR/raw-host-configs"
-cp "$HOST_CODIUM_RESOURCES_DIR/app/product.json" "$CDE_HOST_CACHE_DIR/raw-host-configs/codium_product.json"
-msg 'Done: Find and cache VSCodium version information'
-
-
 if command -v realpath > /dev/null; then
-	CDE_BAREBOOT_COMPOSE_ENV="$(realpath "$CDE_BAREBOOT_COMPOSE_ENV")"
-	CDE_BAREBOOT_COMPOSE="$(realpath "$CDE_BAREBOOT_COMPOSE")"
+		CDE_BAREBOOT_COMPOSE_ENV="$(realpath "$CDE_BAREBOOT_COMPOSE_ENV")"
+		CDE_BAREBOOT_COMPOSE="$(realpath "$CDE_BAREBOOT_COMPOSE")"
 fi
 
-$compose_cmd -f "$CDE_BAREBOOT_COMPOSE" build cde-bootstrap
-$compose_cmd -f "$CDE_BAREBOOT_COMPOSE" run cde-bootstrap
-msg 'Done: Bootstrap CDE'
 
+get_req_cmds() {
+	msg 'Finding required software'
+	declare -g compose_cmd=''
+	if command -v podman > /dev/null; then
+		if command -v podman-compose > /dev/null; then
+			compose_cmd='podman-compose'
+		fi
+	elif command -v docker > /dev/null; then
+		if command -v docker compose > /dev/null; then
+			compose_cmd='docker compose'
+		fi
+	else
+		die 1 'No containerization platform commands were found: "podman", "docker"'
+	fi	
+	[[ -z "$compose_cmd" ]] &&\
+		die 1 'No compose platform commands were found: "podman-compose", "docker compose"'
+	command -v ssh-add > /dev/null ||\
+		die 1 "An OpenSSH command couldn't be found: \"ssh-add\""
+	command -v codium > /dev/null ||\
+		die 1 "VSCodium command couldn't be found: \"codium\""
+}
+get_req_cmds
 
-if [ -z "$SSH_AUTH_SOCK" ]; then
-	eval $(ssh-agent -s) > /dev/null
-fi
-ssh-add "$CDE_HOST_SSH_DIR/$CDE_HOST_SSH_KEYPAIR_NAME"
-$compose_cmd -f "$CDE_BAREBOOT_COMPOSE" build cde
-msg 'Done: Build CDE'
+cache_codium_versinfo() {
+	msg 'Finding and caching VSCodium version information'
+	codium_path="$(command -v codium)" 
+	codium_dir="${codium_path%/*}"
+	if [[ -n "$codium_dir" ]]; then
+		DEFAULT_HOST_CODIUM_RESOURCES_DIRS="$codium_dir/resources"
+		codium_dir="${codium_dir%/*}"
+		[[ -n "$codium_dir" ]] && DEFAULT_HOST_CODIUM_RESOURCES_DIRS+=":$codium_dir/resources"
+		DEFAULT_HOST_CODIUM_RESOURCES_DIRS+=':'
+	fi
+	DEFAULT_HOST_CODIUM_RESOURCES_DIRS+="/usr/share/codium/resources:/opt/vscodium-bin/resources"
 
+	[[ -n "$CDE_HOST_CODIUM_RESOURCES_DIRS" ]] && CDE_HOST_CODIUM_RESOURCES_DIRS+=':'
+	CDE_HOST_CODIUM_RESOURCES_DIRS+=$DEFAULT_HOST_CODIUM_RESOURCES_DIRS
+
+	OLDIFS=$IFS
+	IFS=':'
+	for resources_dir in $CDE_HOST_CODIUM_RESOURCES_DIRS; do
+		[[ -z "$resources_dir" ]] && break
+		[[ -f "$resources_dir/app/product.json" ]] && { HOST_CODIUM_RESOURCES_DIR="$resources_dir"; break; }
+	done
+	IFS=$OLDIFS
+
+	mkdir -p "$CDE_HOST_CACHE_DIR/raw-host-configs"
+	cp "$HOST_CODIUM_RESOURCES_DIR/app/product.json" "$CDE_HOST_CACHE_DIR/raw-host-configs/codium_product.json"
+}
+cache_codium_versinfo
+
+die_git_opt_appears_multiple_times() {
+	die 1 "Wrong value for \"\$CONT_GIT_CONFIG_INHERITANCE\", \"$1\" option appears multiple times"
+}
+
+die_git_opt_mutually_exclusive() {
+	die 1 "Wrong value for \"\$CONT_GIT_CONFIG_INHERITANCE\", \"$1\" and \"$2\" options are mutually exclusive"
+}
+
+cache_git_configs() {
+	is_git_in_list "$CDE_CONT_PKGS" || return 0
+	if ! command -v git >/dev/null; then
+		msg "Skipping git host configuration caching, command \"git\" couldn't be found"
+		return 0
+	fi
+	[[ -z "$CDE_CONT_GIT_CONFIG_INHERITANCE" ]] && return 0
+
+	local -i system_f=0
+	local -i global_f=0
+	local -i local_f=0
+	local -i config_f=0
+	for val in $CDE_CONT_GIT_CONFIG_INHERITANCE; do
+		case "$val" in
+			'system')
+				[[ $system_f -eq 1 ]] && die_git_opt_appears_multiple_times "$val"
+				system_f+=1
+				;;
+			'global')
+				[[ $global_f -eq 1 ]] && die_git_opt_appears_multiple_times "$val"
+				global_f+=1
+				;;
+			'local')
+				[[ $local_f -eq 1 ]] && die_git_opt_appears_multiple_times "$val"
+				local_f+=1
+				;;
+			'config')
+				[[ $config_f -eq 1 ]] && die_git_opt_appears_multiple_times "$val"
+				[[ $system_f -eq 1 ]] && die_git_opt_mutually_exclusive "$val" 'system'
+				[[ $global_f -eq 1 ]] && die_git_opt_mutually_exclusive "$val" 'global'
+				[[ $local_f -eq 1 ]] && die_git_opt_mutually_exclusive "$val" 'local'
+				config_f+=1
+				;;
+			*)
+				die 1 "Wrong value for \"\$CONT_GIT_CONFIG_INHERITANCE\", \"$val\" option doesn't exist"
+				;;
+		esac
+	done
+	msg 'Caching git host configuration'
+	[[ $system_f -eq 1 ]] && git config --list --system 2>/dev/null 1>"$CDE_HOST_CACHE_DIR/raw-host-configs/git_system.conf" || true
+	[[ $global_f -eq 1 ]] && git config --list --global 2>/dev/null 1>"$CDE_HOST_CACHE_DIR/raw-host-configs/git_global.conf" || true
+	[[ $local_f -eq 1 ]] && git config --list --local 2>/dev/null 1>"$CDE_HOST_CACHE_DIR/raw-host-configs/git_local.conf" || true
+	if [[ $config_f -eq 1 ]]; then 
+		git config --list --system 2>/dev/null 1>"$CDE_HOST_CACHE_DIR/raw-host-configs/git_system.conf" || true
+		git config --list --global 2>/dev/null 1>"$CDE_HOST_CACHE_DIR/raw-host-configs/git_global.conf" || true
+		git config --list --local 2>/dev/null 1>"$CDE_HOST_CACHE_DIR/raw-host-configs/git_local.conf" || true
+	fi
+}
+cache_git_configs
+
+bootstrap_cde() {
+	msg 'Bootstrapping CDE'
+	$compose_cmd -f "$CDE_BAREBOOT_COMPOSE" build cde-bootstrap
+	$compose_cmd -f "$CDE_BAREBOOT_COMPOSE" run cde-bootstrap
+}
+bootstrap_cde
+
+add_cde_ssh_identity() {
+	msg 'Adding CDE ssh identity'
+	if [ -z "$SSH_AUTH_SOCK" ]; then
+		eval $(ssh-agent -s) > /dev/null
+	fi
+	ssh-add "$CDE_HOST_SSH_DIR/$CDE_HOST_SSH_KEYPAIR_NAME"
+}
+add_cde_ssh_identity
+
+build_cde() {
+	msg 'Building CDE'
+	$compose_cmd -f "$CDE_BAREBOOT_COMPOSE" build cde
+}
+build_cde
 
 echo -e "\n ----- \n\nTo spin up your CDE run:\n$compose_cmd -f "$CDE_BAREBOOT_COMPOSE" up cde"
