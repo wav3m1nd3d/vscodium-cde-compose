@@ -17,7 +17,6 @@ die_git_opt_appears_multiple_times() {
 }
 
 configure_git() {
-	echo "CONT_GIT_CONFIG_INHERITANCE=$CONT_GIT_CONFIG_INHERITANCE"
 	[[ -z "$CONT_GIT_CONFIG_INHERITANCE" ]] && return 0
 	
 	local -i system_f=0
@@ -37,7 +36,6 @@ configure_git() {
 				;;
 		esac
 	done
-	echo "system_f = $system_f"
 	if [[ $system_f -eq 1 ]]; then
 		if [[ -e $TEMP_CACHE_DIR/raw-host-configs/system.gitconfig ]]; then
 			cat << EOF >> $home_dir/.gitconfig
@@ -48,7 +46,6 @@ EOF
 			die 1 "Couldn't find system gitconfig in cache, please rerun scripts/setup/setup.bash"
 		fi
 	fi
-	echo "global_f = $global_f"
 	if [[ $global_f -eq 1 ]]; then
 		if [[ -e $TEMP_CACHE_DIR/raw-host-configs/system.gitconfig ]]; then
 			cat << EOF >> $home_dir/.gitconfig
