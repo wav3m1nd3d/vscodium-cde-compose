@@ -95,10 +95,6 @@ die_git_opt_appears_multiple_times() {
 	die 1 "Wrong value for \"\$CONT_GIT_CONFIG_INHERITANCE\", \"$1\" option appears multiple times"
 }
 
-die_git_opt_mutually_exclusive() {
-	die 1 "Wrong value for \"\$CONT_GIT_CONFIG_INHERITANCE\", \"$1\" and \"$2\" options are mutually exclusive"
-}
-
 cache_git_configs() {
 	is_git_in_list "$CDE_CONT_PKGS" || return 0
 	if ! command -v git >/dev/null; then
@@ -109,8 +105,6 @@ cache_git_configs() {
 
 	local -i system_f=0
 	local -i global_f=0
-	local -i local_f=0
-	local -i config_f=0
 	for val in $CDE_CONT_GIT_CONFIG_INHERITANCE; do
 		case "$val" in
 			'system')
@@ -121,30 +115,49 @@ cache_git_configs() {
 				[[ $global_f -eq 1 ]] && die_git_opt_appears_multiple_times "$val"
 				global_f+=1
 				;;
-			'local')
-				[[ $local_f -eq 1 ]] && die_git_opt_appears_multiple_times "$val"
-				local_f+=1
-				;;
-			'config')
-				[[ $config_f -eq 1 ]] && die_git_opt_appears_multiple_times "$val"
-				[[ $system_f -eq 1 ]] && die_git_opt_mutually_exclusive "$val" 'system'
-				[[ $global_f -eq 1 ]] && die_git_opt_mutually_exclusive "$val" 'global'
-				[[ $local_f -eq 1 ]] && die_git_opt_mutually_exclusive "$val" 'local'
-				config_f+=1
-				;;
 			*)
 				die 1 "Wrong value for \"\$CONT_GIT_CONFIG_INHERITANCE\", \"$val\" option doesn't exist"
 				;;
 		esac
 	done
+	
 	msg 'Caching git host configuration'
-	[[ $system_f -eq 1 ]] && git config --list --system 2>/dev/null 1>"$CDE_HOST_CACHE_DIR/raw-host-configs/git_system.conf" || true
-	[[ $global_f -eq 1 ]] && git config --list --global 2>/dev/null 1>"$CDE_HOST_CACHE_DIR/raw-host-configs/git_global.conf" || true
-	[[ $local_f -eq 1 ]] && git config --list --local 2>/dev/null 1>"$CDE_HOST_CACHE_DIR/raw-host-configs/git_local.conf" || true
-	if [[ $config_f -eq 1 ]]; then 
-		git config --list --system 2>/dev/null 1>"$CDE_HOST_CACHE_DIR/raw-host-configs/git_system.conf" || true
-		git config --list --global 2>/dev/null 1>"$CDE_HOST_CACHE_DIR/raw-host-configs/git_global.conf" || true
-		git config --list --local 2>/dev/null 1>"$CDE_HOST_CACHE_DIR/raw-host-configs/git_local.conf" || true
+	local system_src="$CDE_HOST_GIT_CONFIG_SYSTEM_PREFIX/etc/gitconfig"
+	local system_dest="$CDE_HOST_CACHE_DIR/raw-host-configs/system.gitconfig"
+	# Replicate git functionality: do not warn if system configuration doesn't exist, only if got troubles accessing
+	touch "$system_dest"
+	if [[ $system_f -eq 1 && -e "$system_src" ]]; then 
+		if [[ -r "$system_src" ]]; then
+			cp "$system_src" "$system_dest"
+		else
+			warn "Skipped system gitconfig caching because it wasn't accessible"
+		fi
+	fi
+
+	local global_srcs=()
+	if [[ -n "$XDG_CONFIG_HOME" ]]; then 
+		global_srcs+=("$XDG_CONFIG_HOME/git/config")
+	else
+		global_srcs+=("$HOME/.config/git/config")
+	fi
+	global_srcs+=("$HOME/.gitconfig")
+	local global_dest="$CDE_HOST_CACHE_DIR/raw-host-configs/global.gitconfig"
+	# Replicate git functionality: do not warn if global configuration doesn't exist, only if got troubles accessing
+	touch "$global_dest"
+	if [[ $global_f -eq 1 ]]; then
+		if  [[ -e "${global_srcs[0]}" ]]; then
+			if [[ -r "${global_srcs[0]}" ]]; then
+				cp "${global_srcs[0]}" "$global_dest"
+			else
+				warn "Skipped global gitconfig (${global_srcs[0]}) caching because it wasn't accessible"
+			fi
+		elif [[ -e "${global_srcs[1]}" ]]; then
+			if [[ -r "${global_srcs[1]}" ]]; then
+				cp "${global_srcs[1]}" "$global_dest"
+			else
+				warn "Skipped global gitconfig (${global_srcs[1]}) caching because it wasn't accessible"
+			fi
+		fi
 	fi
 }
 cache_git_configs
@@ -159,7 +172,9 @@ bootstrap_cde
 add_cde_ssh_identity() {
 	msg 'Adding CDE ssh identity'
 	if [ -z "$SSH_AUTH_SOCK" ]; then
-		eval $(ssh-agent -s) > /dev/null
+		err "ssh-agent couldn't be found"
+		return 0
+		# FIXME: find automatically ssh-agent 
 	fi
 	ssh-add "$CDE_HOST_SSH_DIR/$CDE_HOST_SSH_KEYPAIR_NAME"
 }

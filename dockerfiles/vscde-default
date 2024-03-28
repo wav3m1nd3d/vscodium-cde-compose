@@ -38,6 +38,7 @@ ARG CONT_PROJ_DIR
 ARG CONT_CDE_DIR
 ARG HOST_SSH_KEYPAIR_NAME
 ARG CONT_CODIUM_EXTS
+ARG CONT_GIT_CONFIG_INHERITANCE
 
 RUN --mount=type=bind,source="$HOST_SCRIPTS_DIR",target="$TEMP_SCRIPTS_DIR" \
 	--mount=type=cache,target=/var/cache/apt,sharing=locked \
@@ -63,7 +64,8 @@ RUN --mount=type=bind,source="$HOST_SCRIPTS_DIR",target="$TEMP_SCRIPTS_DIR" \
 
 RUN --mount=type=bind,source="$HOST_SCRIPTS_DIR",target="$TEMP_SCRIPTS_DIR" \
 	--mount=type=bind,source="$HOST_CONFIGS_DIR",target="$TEMP_CONFIGS_DIR" \
-	bash -c "$TEMP_SCRIPTS_DIR/container/configure_generic.bash '$CONT_USER'"
+	--mount=type=bind,source="$HOST_CACHE_DIR",target="$TEMP_CACHE_DIR" \
+	bash -c "$TEMP_SCRIPTS_DIR/container/configure_generic.bash '$CONT_USER' '$CONT_GIT_CONFIG_INHERITANCE'"
 
 COPY $HOST_CACHE_DIR/local-configs/install_codium-serverrc.bash /dev/null
 

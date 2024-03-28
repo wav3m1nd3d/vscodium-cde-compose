@@ -6,6 +6,13 @@ errn() {
 	printf '%s: E: %s' "$SCRIPT_NAME" "$1" >&2
 }
 
+warn() {
+	printf '%s: W: %s\n' "$SCRIPT_NAME" "$1" >&2
+}
+
+warnn() {
+	printf '%s: W: %s' "$SCRIPT_NAME" "$1" >&2
+}
 
 die() {
 	err "$2"
