@@ -21,7 +21,7 @@ This project is a _well automated_ [_**CDE**_](https://github.com/wav3m1nd3d/ade
 
 <summary>
 	<h2>Quick Introduction</h2>
-</summary>
+</summary> <p>
 
 A _**C**ontainerized **D**evelopemnt **E**nvironment_, so one that uses technologies like [Podman](https://podman.io/) or [Docker](https://docs.docker.com) and industry de-facto-standards like [compose specification](https://compose-spec.io/) as its abstraction layers to provide a reliable in operation and flexible in configuration basis for cross-platfrom developement ( Linux / Windows WSL2 / Mac ) with a lot more automatizations than usually is given to a developer:
 
@@ -44,7 +44,7 @@ _Some **negative** considerations:_
 * Graphics support? (planned, but odds are high that it won't be as bare-metal performance)
 * Some basic dependencies are still present _(they better be installed on your machine if you respect your time and your machine)_.
 
-</details>
+</p></details>
 
 ## Use cases
 
