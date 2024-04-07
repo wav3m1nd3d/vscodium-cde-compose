@@ -11,10 +11,14 @@
 	<i>"Comfortable like sitting at home, but your home is actually modular and <b>HOOKED</b> to a helicopter"</i> <sub>anon.</sub>
 </p>
 
+
 # About
 
 This project is a _well automated_ [_**CDE**_](https://github.com/wav3m1nd3d/ade-spec/README.md#CDE "Containerized Development Environment Specification") with seamless [_VSCodium IDE_](https://vscodium.com "VSCodium IDE Website") integration ([_VSCode IDE_](https://code.visualstudio.com "VSCode IDE Website") compatible).
+
+
 <details closed>
+
 <summary>
 	<h2>Quick Introduction</h2>
 </summary>
