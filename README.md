@@ -1,4 +1,4 @@
-# VSCodium [CDE](https://github.com/wav3m1nd3d/ade-spec/README.md#CDE "Containerized Development Environment Specifications" ) Compose
+# VSCodium [CDE](https://github.com/wav3m1nd3d/hade-spec?tab=readme-ov-file#hade-specification "Containerized Development Environment Specifications" ) Compose
 
 <div align=center>
 	<picture>
@@ -14,9 +14,9 @@
 
 # About
 
-This project is a **well automated** [**CDE**](https://github.com/wav3m1nd3d/hade-spec/README.md#CDE "Containerized Development Environment Specification") with seamless [VSCodium IDE](https://vscodium.com "VSCodium IDE Website") integration _([VSCode IDE](https://code.visualstudio.com "VSCode IDE Website") compatible)_.
+This project is a **well automated** [**CDE**](https://github.com/wav3m1nd3d/hade-spec?tab=readme-ov-file#hade-specification "Containerized Development Environment Specification") with seamless [VSCodium IDE](https://vscodium.com "VSCodium IDE Website") integration _([VSCode IDE](https://code.visualstudio.com "VSCode IDE Website") compatible)_.
 
-This project follows [HADES](https://github.com/wav3m1nd3d/hade-spec/README.md "HADE Specification Docs")
+This project follows [HADES](https://github.com/wav3m1nd3d/hade-spec?tab=readme-ov-file#hade-specification "HADE Specification Docs")
 
 ## Quick Introduction
 
